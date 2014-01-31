@@ -83,7 +83,7 @@
 .thumb_func
 _reset:
     // Load CMU base adress
-    ldr rl, CMU_BASE
+    ldr r1, CMU_BASE
 
     // Load current value of HFPERCLK ENABLE
     ldr r2, [r1, #CMU_HFPERCLKEN0]
