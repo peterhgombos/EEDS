@@ -81,9 +81,21 @@
 .globl  _reset
 .type   _reset, %function
 .thumb_func
-_reset: 
+_reset:
+    // Load CMU base adress
+    ldr rl, CMU_BASE
 
-b .  // do nothing
+    // Load current value of HFPERCLK ENABLE
+    ldr r2, [r1, #CMU_HFPERCLKEN0]
+
+    // Set bit for GPIO clk
+    mov r3, #1
+    lsl r3, r3, #CMU_HFPERCLKEN0_GPIO
+
+    orr r2, r2, r3
+    
+    // Store new value
+    str r2, [r1, #CMU_HFPERCLKEN0]
 
 /////////////////////////////////////////////////////////////////////////////
 //
