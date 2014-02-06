@@ -137,9 +137,6 @@ _reset:
         str r2, [r1, #GPIO_MODEH]
 
         /* Put controller to sleep
-        ldr r1, =CMU_BASE
-        str r2, [r1, #CMU_LFACLKEN0]
-        str r2, [r1, #CMU_LFBCLKEN0]
         wfi                                     /* Wait for instruction */
         b LOOP
 
