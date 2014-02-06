@@ -126,15 +126,31 @@ _reset:
         // Enable internal pull up
         mov r2, #0xff
         str r2, [r3, #GPIO_DOUT]
+    
+    // Configure pin interrupts
+        // Configure interrupt source pins
+        ldr r1, =GPIO_BASE
+        mov r2, #0x22222222
+        str r2, [r1, #GPIO_EXTIPSELL]
+
+        mov r2, #0xff
+
+        // Enable high to low level interrupt
+        str r2, [r1, #GPIO_EXTIFALL]
+
+        // Enable low to high level interrupt
+        str r2, [r1, #GPIO_EXTIRISE]
+
+        // Enable interrupt generation
+        str r2, [r1, #GPIO_IEN]
+
+        // Enable interrupt handling
+        ldr r1, =ISER0
+        ldr r2, =#0x802
+        str r2, [r1, #0]
 
     LOOP:
-        ldr r2, [r3, #GPIO_DIN]
-        lsl r2, r2, #8
-        str r2, [r1, #GPIO_DOUT]
-        bl LOOP
-
-
-
+        b LOOP
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -143,8 +159,24 @@ _reset:
 // ///////////////////////////////////////////////////////////////////////////// 
 .thumb_func
 gpio_handler:  
+    // Clear interrupt flag
+    ldr r1, =GPIO_BASE
+    ldr r2, [r1, #GPIO_IF]
+    str r2, [r1, #GPIO_IFC]
 
-b .  // do nothing
+    // Write button values to LEDs
+        // Load input and output registers
+        ldr r1, =GPIO_PA_BASE
+        ldr r2, =GPIO_PC_BASE
+        
+        // Copy input values to output
+        ldr r3, [r2, #GPIO_DIN]
+        lsl r3, r3, #8
+        str r3, [r1, #GPIO_DOUT]
+
+    // Return from interrupt
+    bx lr
+    
 
 /////////////////////////////////////////////////////////////////////////////
 
