@@ -82,8 +82,9 @@
 .type   _reset, %function
 .thumb_func
 _reset:
+    // Load  CMU clock
     // Load CMU base adress
-    ldr r1, CMU_BASE
+    ldr r1, =CMU_BASE
 
     // Load current value of HFPERCLK ENABLE
     ldr r2, [r1, #CMU_HFPERCLKEN0]
@@ -97,13 +98,49 @@ _reset:
     // Store new value
     str r2, [r1, #CMU_HFPERCLKEN0]
 
+
+    // Configure LED pins
+        // Get PORT A base address
+        ldr r1, =GPIO_PA_BASE
+
+        // Set high drive strength on PORT A
+        mov r2, #2
+        str r2, [r1, #GPIO_CTRL]
+
+        // Set PORT A pins as output
+        mov r2, #0x55555555
+        str r2, [r1, #GPIO_MODEH]
+
+        // Turn LEDs off
+        mov r2, #0xffffffff
+        str r2, [r1, #GPIO_DOUT]
+
+    // Configure input button pins
+        // Get PORT C base address
+        ldr r3, =GPIO_PC_BASE
+
+        // Set PORT C pins as input
+        mov r2, #0x33333333
+        str r2, [r3, #GPIO_MODEL]
+
+        // Enable internal pull up
+        mov r2, #0xff
+        str r2, [r3, #GPIO_DOUT]
+
+    LOOP:
+        ldr r2, [r3, #GPIO_DIN]
+        lsl r2, r2, #8
+        str r2, [r1, #GPIO_DOUT]
+        bl LOOP
+
+
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // GPIO handler
 // The CPU will jump here when there is a GPIO interrupt
-//
-/////////////////////////////////////////////////////////////////////////////
-
+// ///////////////////////////////////////////////////////////////////////////// 
 .thumb_func
 gpio_handler:  
 
