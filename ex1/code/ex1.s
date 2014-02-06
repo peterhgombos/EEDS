@@ -107,9 +107,6 @@ _reset:
         mov r2, #2
         str r2, [r1, #GPIO_CTRL]
 
-        // Set PORT A pins as output
-        mov r2, #0x55555555
-        str r2, [r1, #GPIO_MODEH]
 
         // Turn LEDs off
         mov r2, #0xffffffff
@@ -149,7 +146,20 @@ _reset:
         ldr r2, =#0x802
         str r2, [r1, #0]
 
+    ldr r1, =SCR
+    mov r2, #6
+    str r2, [r1, #0]
+
     LOOP:
+        // Disable PORT A pins output
+        ldr r1, =GPIO_PA_BASE
+        mov r2, #0
+        str r2, [r1, #GPIO_MODEH]
+        // Sleep
+        ldr r1, =CMU_BASE
+        str r2, [r1, #CMU_LFACLKEN0]
+        str r2, [r1, #CMU_LFBCLKEN0]
+        wfi
         b LOOP
 
 /////////////////////////////////////////////////////////////////////////////
@@ -163,6 +173,11 @@ gpio_handler:
     ldr r1, =GPIO_BASE
     ldr r2, [r1, #GPIO_IF]
     str r2, [r1, #GPIO_IFC]
+
+    // Enable PORT A pins output
+    ldr r1, =GPIO_PA_BASE
+    mov r2, #0x55555555
+    str r2, [r1, #GPIO_MODEH]
 
     // Write button values to LEDs
         // Load input and output registers
