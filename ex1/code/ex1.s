@@ -124,11 +124,12 @@ _reset:
     ldr r2, =#0x802                             /* Set the GPIO_EVEN and GPIO_ODD bits                                   */
     str r2, [r1, #0]                            /* Write the new value to the register                                   */
 
+    /* Enable sleep mode 3 */
     ldr r1, =SCR
     mov r2, #7
     str r2, [r1, #0]
 
-    /* Endless loop */
+    /* Main program loop */
     LOOP:
         mov r2, #0
 
@@ -138,7 +139,7 @@ _reset:
 
         /* Put controller to sleep */
         wfi                                     /* Wait for instruction */
-        b LOOP
+        b LOOP                                  /* Next iteration       */
 
 /****************************************************************************
  *                                                                          *
