@@ -131,14 +131,14 @@ _reset:
 
     /* Main program loop */
     LOOP:
-        mov r2, #0
-
         /* Disable PORT A pins output in order to save power */
+        mov r2, #0
         ldr r1, =GPIO_PA_BASE
         str r2, [r1, #GPIO_MODEH]
 
         /* Put controller to sleep */
         wfi                                     /* Wait for instruction */
+
         b LOOP                                  /* Next iteration       */
 
 /****************************************************************************
@@ -152,8 +152,8 @@ _reset:
 gpio_handler:  
     /* Clear interrupt flag */
     ldr r1, =GPIO_BASE                          /* Load the GPIO register base address          */
-    ldr r2, [r1, #GPIO_IF]                      /* Load the GPIO Interrupt Flag Register        */
-    str r2, [r1, #GPIO_IFC]                     /* Load the GPIO Interrupt Flag Clear Register  */
+    mov r2, #0xff                               /* Load clear flag                              */
+    str r2, [r1, #GPIO_IFC]                     /* Set the GPIO Interrupt Flag Clear Register   */
 
     /* Set pins 8-15 on PORT A as output */
     ldr r1, =GPIO_PA_BASE
