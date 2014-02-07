@@ -91,7 +91,7 @@ _reset:
     str r2, [r1, #CMU_HFPERCLKEN0]              /* Write the new value to the register                                  */
 
 
-    /* Configure LED pins
+    /* Configure LED pins */
     ldr r1, =GPIO_PA_BASE                       /* Load the PORT A register base address                                */
 
     mov r2, #2
@@ -100,7 +100,7 @@ _reset:
     mov r2, #0xFFFFFFFF
     str r2, [r1, #GPIO_DOUT]                    /* Output pins are output low, so we set them high to disable the LEDs  */
 
-    /* Configure input button pins
+    /* Configure input button pins */
     ldr r3, =GPIO_PC_BASE                       /* Load the PORT C register base address                                */
 
     mov r2, #0x33333333                         /* Set pins 0-7 on PORT C as input                                      */
@@ -109,7 +109,7 @@ _reset:
     mov r2, #0xff
     str r2, [r3, #GPIO_DOUT]                    /* Enable internal pull-up on pins 0-7 on PORT C                        */
     
-    /* Configure pin change interrupts on PORT C
+    /* Configure pin change interrupts on PORT C */
     ldr r1, =GPIO_BASE                          /* Load the GPIO register base address                                  */
     mov r2, #0x22222222                         /* Set the enable bit for all PORTC pins                                */
     str r2, [r1, #GPIO_EXTIPSELL]               /* Write value to the External Interrupt Port Select Low Register       */
@@ -136,7 +136,7 @@ _reset:
         ldr r1, =GPIO_PA_BASE
         str r2, [r1, #GPIO_MODEH]
 
-        /* Put controller to sleep
+        /* Put controller to sleep */
         wfi                                     /* Wait for instruction */
         b LOOP
 
@@ -149,17 +149,17 @@ _reset:
 
 .thumb_func
 gpio_handler:  
-    /* Clear interrupt flag
+    /* Clear interrupt flag */
     ldr r1, =GPIO_BASE                          /* Load the GPIO register base address          */
     ldr r2, [r1, #GPIO_IF]                      /* Load the GPIO Interrupt Flag Register        */
     str r2, [r1, #GPIO_IFC]                     /* Load the GPIO Interrupt Flag Clear Register  */
 
-    /* Set pins 8-15 on PORT A as output
+    /* Set pins 8-15 on PORT A as output */
     ldr r1, =GPIO_PA_BASE
     mov r2, #0x55555555
     str r2, [r1, #GPIO_MODEH]
 
-    /* Read button values and set LEDs accordingly
+    /* Read button values and set LEDs accordingly */
     ldr r1, =GPIO_PA_BASE                       /* Load the PORT A register base address                                                */
     ldr r2, =GPIO_PC_BASE                       /* Load the PORT C register base address                                                */
     ldr r3, [r2, #GPIO_DIN]                     /* Load the button values                                                               */
