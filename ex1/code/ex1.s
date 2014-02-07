@@ -100,29 +100,29 @@ _reset:
     mov r2, #0xFFFFFFFF
     str r2, [r1, #GPIO_DOUT]                    /* Output pins are output low, so we set them high to disable the LEDs  */
 
+
     /* Configure input button pins */
     ldr r3, =GPIO_PC_BASE                       /* Load the PORT C register base address                                */
-
     mov r2, #0x33333333                         /* Set pins 0-7 on PORT C as input                                      */
     str r2, [r3, #GPIO_MODEL]
 
-    mov r2, #0xff
+    mov r2, #0xff                               /* Load enable flag                                                     */
     str r2, [r3, #GPIO_DOUT]                    /* Enable internal pull-up on pins 0-7 on PORT C                        */
+
     
     /* Configure pin change interrupts on PORT C */
     ldr r1, =GPIO_BASE                          /* Load the GPIO register base address                                  */
     mov r2, #0x22222222                         /* Set the enable bit for all PORTC pins                                */
     str r2, [r1, #GPIO_EXTIPSELL]               /* Write value to the External Interrupt Port Select Low Register       */
 
-    mov r2, #0xff
+    mov r2, #0xff                               /* Load enable flag                                                     */
+    str r2, [r1, #GPIO_EXTIFALL]                /* Enable high->low pin change interrupt for PORT C pins                */
+    str r2, [r1, #GPIO_EXTIRISE]                /* Enable low->high pin change interrupt for PORT C pins                */
+    str r2, [r1, #GPIO_IEN]                     /* Enable external interrupt generation for PORT C pins                 */
 
-    str r2, [r1, #GPIO_EXTIFALL]                /* Enable high->low pin change interrupt for PORT C pins                 */
-    str r2, [r1, #GPIO_EXTIRISE]                /* Enable low->high pin change interrupt for PORT C pins                 */
-    str r2, [r1, #GPIO_IEN]                     /* Enable external interrupt generation for PORT C pins                  */
-
-    ldr r1, =ISER0                              /* Load the Interrupt Set Enable Register 0 address                      */
-    ldr r2, =#0x802                             /* Set the GPIO_EVEN and GPIO_ODD bits                                   */
-    str r2, [r1, #0]                            /* Write the new value to the register                                   */
+    ldr r1, =ISER0                              /* Load the Interrupt Set Enable Register 0 address                     */
+    ldr r2, =#0x802                             /* Set the GPIO_EVEN and GPIO_ODD bits                                  */
+    str r2, [r1, #0]                            /* Write the new value to the register                                  */
 
     /* Enable sleep mode 3 */
     ldr r1, =SCR
@@ -131,7 +131,7 @@ _reset:
 
     /* Main program loop */
     LOOP:
-        /* Disable PORT A pins output in order to save power */
+        /* Disable PORT A pins output in order to save power. This has to be done every time. */
         mov r2, #0
         ldr r1, =GPIO_PA_BASE
         str r2, [r1, #GPIO_MODEH]
@@ -150,7 +150,7 @@ _reset:
 
 .thumb_func
 gpio_handler:  
-    /* Clear interrupt flag */
+    /* Clear interrupt flag. This is done to prevent interrupts from being interrupted.         */
     ldr r1, =GPIO_BASE                          /* Load the GPIO register base address          */
     mov r2, #0xff                               /* Load clear flag                              */
     str r2, [r1, #GPIO_IFC]                     /* Set the GPIO Interrupt Flag Clear Register   */
