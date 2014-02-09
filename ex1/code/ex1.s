@@ -110,24 +110,24 @@ _reset:
     str r2, [r3, #GPIO_DOUT]                    /* Enable internal pull-up on pins 0-7 on PORT C                        */
 
     
-    /* Configure pin change interrupts on PORT C */
-    ldr r1, =GPIO_BASE                          /* Load the GPIO register base address                                  */
-    mov r2, #0x22222222                         /* Set the enable bit for all PORTC pins                                */
-    str r2, [r1, #GPIO_EXTIPSELL]               /* Write value to the External Interrupt Port Select Low Register       */
+/* Configure pin change interrupts on PORT C */
+ldr r1, =GPIO_BASE            /* Load GPIO register base address */
+mov r2, #0x22222222           /* Load enable bit for all PORTC pins */
+str r2, [r1, #GPIO_EXTIPSELL] /* Write to External Interrupt Port Select Low Register */
 
-    mov r2, #0xff                               /* Load enable flag                                                     */
-    str r2, [r1, #GPIO_EXTIFALL]                /* Enable high->low pin change interrupt for PORT C pins                */
-    str r2, [r1, #GPIO_EXTIRISE]                /* Enable low->high pin change interrupt for PORT C pins                */
-    str r2, [r1, #GPIO_IEN]                     /* Enable external interrupt generation for PORT C pins                 */
+mov r2, #0xff                 /* Load enable flag */
+str r2, [r1, #GPIO_EXTIFALL]  /* Enable hi->lo pin change interrupt */
+str r2, [r1, #GPIO_EXTIRISE]  /* Enable lo->hi pin change interrupt */
+str r2, [r1, #GPIO_IEN]       /* Enable external interrupt generation */
 
-    ldr r1, =ISER0                              /* Load the Interrupt Set Enable Register 0 address                     */
-    ldr r2, =#0x802                             /* Set the GPIO_EVEN and GPIO_ODD bits                                  */
-    str r2, [r1, #0]                            /* Write the new value to the register                                  */
+ldr r1, =ISER0                /* Load Interrupt Set Enable Register 0 address */
+ldr r2, =#0x802               /* Load GPIO_EVEN and GPIO_ODD bits */
+str r2, [r1, #0]              /* Write new value to register */
 
-    /* Enable sleep mode 3 */
-    ldr r1, =SCR
-    mov r2, #7
-    str r2, [r1, #0]
+/* Enable sleep mode 3 */
+ldr r1, =SCR
+mov r2, #7
+str r2, [r1, #0]
 
     /* Main program loop */
     LOOP:
@@ -150,10 +150,10 @@ _reset:
 
 .thumb_func
 gpio_handler:  
-    /* Clear interrupt flag. This is done to prevent interrupts from being interrupted.         */
-    ldr r1, =GPIO_BASE                          /* Load the GPIO register base address          */
-    mov r2, #0xff                               /* Load clear flag                              */
-    str r2, [r1, #GPIO_IFC]                     /* Set the GPIO Interrupt Flag Clear Register   */
+    /* Clear interrupt flag. This is done to prevent interrupts from being interrupted. */
+    ldr r1, =GPIO_BASE          /* Load GPIO register base address      */
+    mov r2, #0xff               /* Load clear flag              */
+    str r2, [r1, #GPIO_IFC]     /* Set GPIO Interrupt Flag Clear Register */
 
     /* Set pins 8-15 on PORT A as output */
     ldr r1, =GPIO_PA_BASE
@@ -161,13 +161,13 @@ gpio_handler:
     str r2, [r1, #GPIO_MODEH]
 
     /* Read button values and set LEDs accordingly */
-    ldr r1, =GPIO_PA_BASE                       /* Load the PORT A register base address                                                */
-    ldr r2, =GPIO_PC_BASE                       /* Load the PORT C register base address                                                */
-    ldr r3, [r2, #GPIO_DIN]                     /* Load the button values                                                               */
-    lsl r3, r3, #8                              /* Shift the button values values so they can be written directly the the LED register  */
-    str r3, [r1, #GPIO_DOUT]                    /* Write to the LED register                                                            */
+    ldr r1, =GPIO_PA_BASE       /* Load PORT A register base address    */
+    ldr r2, =GPIO_PC_BASE       /* Load PORT C register base address    */
+    ldr r3, [r2, #GPIO_DIN]     /* Load button values                   */
+    lsl r3, r3, #8              /* Shift button values values so they can be written directly the the LED register  */
+    str r3, [r1, #GPIO_DOUT]    /* Write to LED register                */
 
-    bx lr                                       /* Return from the interrupt                                                            */
+    bx lr                       /* Return from interrupt            */
     
 
 /***************************************************************************/
