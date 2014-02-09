@@ -1,0 +1,4 @@
+# Use guard for filesystem listening
+gem 'guard', require: false
+# For better mac filesystem listening performance
+gem 'rb-fsevent', require: false
