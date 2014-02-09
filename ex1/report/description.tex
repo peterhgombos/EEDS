@@ -38,20 +38,35 @@ We use the fact that we have interrupts for both edge transitions on the gamepad
 \label{lstinputlisting:interrupt-handler}
 
 \subsection{A program using low energy modes}
+To save energy while running the program, it can use a low energy mode.
+There are five different energy modes that can be used, with different peripherals available, as can be seen in figure \ref{fig:energy_modes}.\cite{referencemanual}
 
-\subsection{Further improvements}
-The program described in this report sleeps when it is idle, just waiting for an interrupt.
-This is done in the interest of power efficiency.
-%add label instead of elsewhere
-As described elsewhere, the program sleeps in what is called EM3, where some of the functions are running.
-However, a fourth energy mode is available in the micro controller, and even more power could be saved.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{figures/energymodes.png}
+\caption{The different energy modes and available peripherals}
+\label{fig:energy_modes}
+\end{figure}
 
-The fourth stage, EM4, is a deep sleep mode where only a few services use power.
-After going to EM4, it would take 160 $\mu$s to go back to EM0.
-This would be satisfactory for the intended behavior of the program, and not present much perceived lag when pressing a button.
-Unfortunately, to wake up the unit again is limited.
-Either the micro controller needs to be reset, or GPIO interrupt wake must be enabled.
-The interrupts for waking up the unit needs to be sent to one of a list of GPIO ports.\cite{referencemanual}
+The trade off to use a low energy mode is that it uses some time to wake up (that is go from current energy mode to EM0)
+From EM2 and EM3  the wake up time is about 2 $\mu$s, while in EM4 it is 160 $\mu$s.
+EM1 has none latency.
+For the user, a 0.1 s latency would feel instantaneous.\cite{response}
+This means that even EM4 is satisfactory for the application, as after waking up from this mode will feel fast.
+
+The only thing that needs to be done while the application is sleeping, is to wait for interrupts on the GPIO ports.
+This excludes EM4, as to wake up from this mode with interrupts is only supported on a small number of GPIO ports.
+
+Thus the deepest sleep the application can use is EM3.
+
+\lstinputlisting[caption={Sleep mode enabling},label={lst:sleep},linerange={127-130}]{../code/ex1.s}
+
+In listing \ref{lst:sleep}, energy mode 3 is enabled when the wait for instruction (wfi) instruction is called, or the code returns from an interrupt.
+The wfi instruction is called in listing \ref{lst:loop}, the main loop of the program. 
+This means that each time the program returns from an interrupt, wfi is 
+
+\lstinputlisting[caption={Main loop}, label={lst:loop}, linerange={133-142}]{../code/ex1.s}
+\subsubsection{Further improvements}
 
 With these limitations, it is clear that the deep sleep mode will not be usable within the requirements and with the provided hardware.
 A small change to the hardware would let the program work as intended, and sleep deeper.

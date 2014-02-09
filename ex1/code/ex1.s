@@ -124,7 +124,7 @@ ldr r1, =ISER0                /* Load Interrupt Set Enable Register 0 address */
 ldr r2, =#0x802               /* Load GPIO_EVEN and GPIO_ODD bits */
 str r2, [r1, #0]              /* Write new value to register */
 
-/* Enable sleep mode 3 */
+/* Enable energy mode 3 */
 ldr r1, =SCR
 mov r2, #7
 str r2, [r1, #0]
