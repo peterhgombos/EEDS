@@ -31,7 +31,8 @@ The interrupt handler is defined as folows \ref{lstinputlisting:interrupt-handle
 First order of the day is clearing any potential lingering interrupts. This to avoid the interrupt handler being interrupted by another interrupt, hindering anything productive from being done.
 Gamepad output is then loaded from GPIO port C, stored, bitshifted to match the output pins on port A, and written to the registry.
 
-We use the fact that we have interrupts for both edge transitions on the gamepad available to set and clear the LEDs. This ensures that the LEDs are updated on both button presses- and releases. This contrasts with the earlier polling approach, where the values were blindly copied each tick.
+Interrupts are available for both edge transitions on the gamepad, with the attached handler executing on both events.
+This ensured that the LEDs are updated on both button presses and releases. It contrasts with the earlier polling approach, where the values were blindly copied on each tick, irregardles of the values changed or not.
 
 
 \lstinputlisting[linerange={151-156, 162-170}]{../code/ex1.s}
@@ -43,7 +44,7 @@ We use the fact that we have interrupts for both edge transitions on the gamepad
 The program described in this report sleeps when it is idle, just waiting for an interrupt.
 This is done in the interest of power efficiency.
 %add label instead of elsewhere
-As described elsewhere, the program sleeps in what is called EM3, where some of the functions are running.
+As described earlier, the program sleeps in what is called EM3, where some of the functions are running.
 However, a fourth energy mode is available in the micro controller, and even more power could be saved.
 
 The fourth stage, EM4, is a deep sleep mode where only a few services use power.
