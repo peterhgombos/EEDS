@@ -8,14 +8,14 @@ Energy consumption was noted for each improvement to the system, and one can cle
 
 \subsection{A program without interrupts}
 
-The first system implements a simple polling-based mechanism for updating the LEDs on the gamepad. The main loop simply loads whatever values are found on the gamepad (GPIO port C, pins 0-7), shifts them to the appropriate position required by the output port (GPIO port A, pins 8 - 15), and sets the corresponding pins to logical low.
+The first system implements a simple polling-based mechanism for updating the LEDs on the game pad. The main loop simply loads whatever values are found on the game pad (GPIO port C, pins 0-7), shifts them to the appropriate position required by the output port (GPIO port A, pins 8 - 15), and sets the corresponding pins to logical low.
 
 \subsection{A program with interrupts}
 
-The second system contains a simple, yet important architectural change. The system no longer blindly loads register values form input to output, instead only updating them when interrupts are received from the gamepad.
+The second system contains a simple, yet important architectural change. The system no longer blindly loads register values form input to output, instead only updating them when interrupts are received from the game pad.
 
 External interrupt generation for GPIO port C is now allowed. , as well as edge-driven in
-Edge-driven interrputs are enabled for transitions from both high to low, as well as low to high.
+Edge-driven interrupts are enabled for transitions from both high to low, as well as low to high.
 
 \begin{lstlisting}
 \end{lstlisting}
@@ -27,15 +27,15 @@ Edge-driven interrputs are enabled for transitions from both high to low, as wel
 The program described in this report sleeps when it is idle, just waiting for an interrupt.
 This is done in the interest of power efficiency.
 As described elsewhere, the program sleeps in what is called EM3, where some of the functions are running.
-However, a fourth energy mode is available in the microcontroller, and even more power could be saved.
+However, a fourth energy mode is available in the micro controller, and even more power could be saved.
 
 The fourth stage, EM4, is a deep sleep mode where only a few services use power.
 After going to EM4, it would take 160 $\mu$s to go back to EM0.
-This would be satisfactory for the intended behaviour of the program, and not present much perceived lag when pressing a button.
+This would be satisfactory for the intended behavior of the program, and not present much perceived lag when pressing a button.
 Unfortunately, to wake up the unit again is limited.
-Either the microcontroller needs to be reset, or GPIO interrupt wake must be enabled.
+Either the micro controller needs to be reset, or GPIO interrupt wake must be enabled.
 The interrupts for waking up the unit needs to be sent to one of a list of GPIO ports.\cite{referencemanual}
 
-With these limitations, it is clear that the deep sleep mode will not be usuable within the requirements and with the provided hardware.
+With these limitations, it is clear that the deep sleep mode will not be usable within the requirements and with the provided hardware.
 A small change to the hardware would let the program work as intended, and sleep deeper.
 With a multiplexer of all the signals from the buttons, and output to one of the supported GPIO ports, it would be easy to support EM4.
