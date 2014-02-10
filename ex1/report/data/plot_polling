@@ -5,10 +5,10 @@ set xrange [0:25]
 
 set logscale y
 set yrange [0.0001:10]
-set ytics (1, 5)
+set ytics (0.001, 0.01, 0.1, 1, 5)
 
 set terminal pdf
 set out "polling.pdf"
 unset key
 
-plot "polling-new" using 1:2 with lines
+plot "polling-new" using 1:2 with lines linecolor rgb "red"
