@@ -1,12 +1,14 @@
 \section{Description and Methodology}
 
-This report describes three distinct systems; Each one more more power efficient than the last.
+This report describes three distinct systems; Each one more more refined than the last.
 
-The first implementation is a simple polling-based approach. The second one uses interrupts, removing time needlessly used for idling. The final system goes into a deep sleep mode, waking only when coerced to do so by an interrupt from the GPIO controller.
+The first implementation is a simple polling-based approach. The second one uses interrupts, guaranteeing timely response to user input. The final system goes into stop mode, waking only when coerced to do so by an interrupt from the GPIO controller.
 
-Energy consumption was noted for each improvement to the system, and one can clearly see how power consumption is reduced by multiple orders of magnitude in the final system.
+Energy consumption was noted for the polling- and sleep based versions of the system. The same repeat pattern of button presses were used in each of the measurements. This ensures easy comparison between the measurements.
 
-\subsection{A program without interrupts}
+As the interrupt-based system frequently sits noop-ing quietly by itself in a corner, its power usage is roughly equal to the polling-based version. It is therefore not considered in the results section. 
+
+\subsection{Polling based system}
 
 The initial system implements a simple polling-based mechanism for updating the LEDs on the game pad. The main loop simply loads whatever values are found on the game pad (GPIO port C, pins 0-7), shifts them to the appropriate position required by the output port (GPIO port A, pins 8 - 15), and sets the corresponding pins to logical low.
 
@@ -29,7 +31,7 @@ _reset:
 This naïve implementation is exceptionally good at eating all available power, a trait not desirable in what was supposed to be an energy efficient system. The main loop runs at all times, even when no update is needed, eating away at scarce energy resources.
 
 
-\subsection{A program with interrupts}
+\subsection{Interrupt based system}
 
 The second system contains a simple, yet important architectural change. The system no longer blindly loads register values each tick, instead updating only when receiving interrupts from GPIO port C.
 
@@ -55,7 +57,7 @@ This ensured that the LEDs are updated on both button presses and releases. It c
 
 \lstinputlisting[caption={Interrupt handler function}, label={lst:interrupt-handler}, linerange={151-156, 162-170}]{../code/ex1.s}
 
-\subsection{A program using low energy modes}
+\subsection{Low energy mode based system}
 To save energy while running the program, it can use a low energy mode.
 There are five different energy modes that can be used, with different peripherals available, as can be seen in figure \ref{fig:energy_modes}.\cite{referencemanual}
 
