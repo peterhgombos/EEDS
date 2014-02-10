@@ -8,6 +8,11 @@ Energy consumption was noted for the polling- and sleep based versions of the sy
 
 As the interrupt-based system frequently sits noop-ing quietly by itself in a corner, its power usage is roughly equal to the polling-based version. It is therefore not considered in the results section. 
 
+The system has been set up and tested with GDB.
+When it was wished for to sleep in EM4 (see \ref{subsecition:low-energy}), there was some confusion by the documents provided with the micro controller.
+To understand what happened, the registers written to was examined by stepping through the program.
+As the problem was not with the registers, but with the values to write to the registers, the debugging found nothing to notice.
+
 \subsection{Polling system}
 \label{subsection:polling}
 
