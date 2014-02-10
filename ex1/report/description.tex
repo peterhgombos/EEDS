@@ -1,6 +1,6 @@
 \section{Description and Methodology}
 
-This report describes three distinct systems; Each one more more refined than the last.
+This report describes three distinct systems for controlling LEDs on a gamepad via user input; Each one more more refined than the last.
 
 The first implementation is a simple polling-based approach. The second one uses interrupts, guaranteeing timely response to user input. The final system goes into stop mode, waking only when coerced to do so by an interrupt from the GPIO controller.
 
@@ -9,9 +9,8 @@ Energy consumption was noted for the polling- and sleep based versions of the sy
 As the interrupt-based system frequently sits noop-ing quietly by itself in a corner, its power usage is roughly equal to the polling-based version. It is therefore not considered in the results section. 
 
 The system has been set up and tested with GDB.
-When it was wished for to sleep in EM4 (see \ref{subsection:low-energy}), there was some confusion by the documents provided with the micro controller.
-To understand what happened, the registers written to was examined by stepping through the program.
-As the problem was not with the registers, but with the values to write to the registers, the debugging found nothing to notice.
+When the system was to sleep in EM4 (see \ref{subsection:low-energy}), there was some confusion by the documentation provided for which registers to set. Diving into the depths of the GDB was deemed nessecary.
+Registers written to were examined by stepping through the program. The problem was found to lie with the values written to the registers, and not the registers themselves.
 
 \subsection{Polling system}
 \label{subsection:polling}
