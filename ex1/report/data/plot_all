@@ -1,0 +1,18 @@
+set xlabel "Time (s)"
+set ylabel "Current (mA)"
+
+set xrange [0:25]
+
+set logscale y
+set yrange [0.0001:10]
+set ytics (1, 5)
+
+set xlabel "Time (s)"
+set ylabel "Current (mA)"
+
+set terminal pdf
+set out "all.pdf"
+unset key
+
+plot "polling-new" using 1:2 with lines title "Polling", \
+     "sleep-new" using 1:2 with lines title "Interrupt w/ sleep"
