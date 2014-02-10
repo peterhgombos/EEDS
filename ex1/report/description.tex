@@ -75,9 +75,8 @@ There are five different energy modes that can be used, with different periphera
 \label{fig:energy_modes}
 \end{figure}
 
-The trade off to use a low energy mode is that it uses some time to wake up (that is go from current energy mode to EM0)
-From EM2 and EM3  the wake up time is about 2 $\mu$s, while in EM4 it is 160 $\mu$s.
-EM1 has none latency.
+The trade off to use a low energy mode is that it takes some time to wake up (that is, to go from current energy mode to EM0)
+From EM2 and EM3  the wake up time is about 2 $\mu$s, while in EM4 it is 160 $\mu$s. EM1 has no latency.
 For the user, a 0.1 s latency would feel instantaneous.\cite{response}
 This means that even EM4 is satisfactory for the application, as after waking up from this mode will feel fast.
 
