@@ -4,6 +4,11 @@ Measurements were done for both the polling based system \ref{subsection:polling
 
 \subsection{Polling based system}
 
+As can be seen in the figure \ref{fig:polling-based-system}, the system uses a significant amount of power.
+There is a slight spike when buttons are pressed, but the increased amount of power draw is negligible compared to the average draw.
+
+The power usage when the program is running averages about 4 $m A$
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/polling.pdf}
@@ -12,6 +17,10 @@ Measurements were done for both the polling based system \ref{subsection:polling
 \end{figure}
 
 \subsection{Low energy mode based system}
+In figure \ref{fig:sleep-based-system}, the difference between the times the processor is sleeping, and when buttons are pressed can easily be seen.
+Some variance in the measurements are visible, these are due transients as the voltage settles to its new value.
+
+The power usage when the program is sleeping averages about 1.8 $\mu A$.
 
 \begin{figure}[h]
 \centering
@@ -21,6 +30,10 @@ Measurements were done for both the polling based system \ref{subsection:polling
 \end{figure}
 
 \subsection{System comparison}
+
+The system comparison clearly shows the payoff of using a low energy mode when idling.
+
+
 
 \begin{figure}[h]
 \centering
