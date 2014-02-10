@@ -103,3 +103,16 @@ An idea would be to multiplex the signals from the buttons.
 Every time a a button is pressed, a signal would go high.
 This signal could go to one of the GPIO ports supported to wake the unit from EM4.
 This could save a lot of energy, as a micro processor running in EM4 can use as little as 20nA.\cite{modes}
+
+\subsection{Implementation details}
+
+The finished system allows the user to play light piano with the LEDs.
+This is done by mapping each button to a LED.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.1]{figures/lights.jpg}
+\caption{The game pad displaying lights}
+\label{fig:pad}
+
+\end{figure}
