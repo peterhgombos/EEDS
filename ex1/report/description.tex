@@ -9,6 +9,7 @@ Energy consumption was noted for the polling- and sleep based versions of the sy
 As the interrupt-based system frequently sits noop-ing quietly by itself in a corner, its power usage is roughly equal to the polling-based version. It is therefore not considered in the results section. 
 
 \subsection{Polling based system}
+\label{subsection:polling}
 
 The initial system implements a simple polling-based mechanism for updating the LEDs on the game pad. The main loop simply loads whatever values are found on the game pad (GPIO port C, pins 0-7), shifts them to the appropriate position required by the output port (GPIO port A, pins 8 - 15), and sets the corresponding pins to logical low.
 
@@ -58,6 +59,8 @@ This ensured that the LEDs are updated on both button presses and releases. It c
 \lstinputlisting[caption={Interrupt handler function}, label={lst:interrupt-handler}, linerange={151-156, 162-170}]{../code/ex1.s}
 
 \subsection{Low energy mode based system}
+\label{subsection:low-energy}
+
 To save energy while running the program, it can use a low energy mode.
 There are five different energy modes that can be used, with different peripherals available, as can be seen in figure \ref{fig:energy_modes}.\cite{referencemanual}
 
