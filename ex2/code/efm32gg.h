@@ -41,6 +41,8 @@
 #define GPIO_EXTIRISE  ((volatile uint32_t*)(GPIO_PA_BASE + 0x108))
 #define GPIO_EXTIFALL  ((volatile uint32_t*)(GPIO_PA_BASE + 0x10c))
 #define GPIO_IEN       ((volatile uint32_t*)(GPIO_PA_BASE + 0x110))
+#define GPIO_IF        ((volatile uint32_t*)(GPIO_PA_BASE + 0x114))
+#define GPIO_IFS       ((volatile uint32_t*)(GPIO_PA_BASE + 0x118))
 #define GPIO_IFC       ((volatile uint32_t*)(GPIO_PA_BASE + 0x11c))
 
 // CMU
@@ -141,3 +143,8 @@
 #define SYSTICK_CTRL ((volatile uint32_t*)0xe000e010)
 #define SYSTICK_LOAD ((volatile uint32_t*)0xe000e014)
 
+// Interrupt Request Lines
+#define IRQ_DMA         0
+#define IRQ_GPIO_EVEN   1
+#define IRQ_GPIO_ODD    11
+#define IRQ_TIMER1      12
