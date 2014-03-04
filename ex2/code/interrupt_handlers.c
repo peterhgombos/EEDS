@@ -1,17 +1,23 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include "wish.h"
 
 #include "efm32gg.h"
 
 /* TIMER1 interrupt handler */
 void __attribute__ ((interrupt)) TIMER1_IRQHandler() 
 {
-  /* Pass data to the DAC */
-  //*DAC0_CH0DATA = 0x0;
-  //*DAC0_CH1DATA = 0x0;
 
   /* Clear timer 1 interrupt */
   *TIMER1_IFC = 1;
+
+  static int count = 0;
+
+  /* Pass data to the DAC */
+  *DAC0_CH0DATA = wish[count++];
+
+  /* Update LEDs */
+  *GPIO_PA_DOUT = count;
 }
 
 /* GPIO even pin interrupt handler */
