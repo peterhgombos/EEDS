@@ -3,6 +3,7 @@
 *.elf
 *.o
 *.swp
+*.tar.gz
 
 # LATEX
 *.aux
@@ -29,6 +30,8 @@
 *.out
 *.synctex.gz
 *.d
+*.bak
+*.lol
 *.pdf
 
 #################
