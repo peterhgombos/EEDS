@@ -28,15 +28,6 @@ int main(void)
   /* Enable interrupt handling */
   setupNVIC();
 
-  while(1)
-  {
-    for (int i = 0; i < 4095; i++)
-    {
-      *DAC0_CH0DATA = i;
-      *DAC0_CH1DATA = i;
-    }
-  }
-
   return 0;
 }
 
