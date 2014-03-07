@@ -39,7 +39,7 @@ void fsm_init (void);
 * This will check the event queue for pending events, and react to them
 * if there are any.
 */
-void fsm_update (void);
+uint8_t fsm_update (void);
 
 /**
 * Write an event to the event queue.

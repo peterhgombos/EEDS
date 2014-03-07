@@ -21,25 +21,29 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
   /* Update LEDs */
   //*GPIO_PA_DOUT = count++;
 
-  /* Check for new events */
-  buttons_debounce();
-  buttons_update (BUTTON_LEFT_LEFT);
-  buttons_update (BUTTON_LEFT_UP);
-  buttons_update (BUTTON_LEFT_RIGHT);
-  buttons_update (BUTTON_LEFT_DOWN);
   fsm_update();
+}
+
+/* TIMER2 interrupt handler */
+void __attribute__ ((interrupt)) TIMER2_IRQHandler()
+{
+  /* Clear timer 1 interrupt */
+  *TIMER2_IFC = 1;
+  buttons_timer_irq();
 }
 
 /* GPIO even pin interrupt handler */
 void __attribute__ ((interrupt)) GPIO_EVEN_IRQHandler() 
 {
-  /* Clear GPIO interrutps */
+  /* Clear GPIO interrupts */
   *GPIO_IFC = 0xFF;
+  buttons_gpio_irq();
 }
 
 /* GPIO odd pin interrupt handler */
 void __attribute__ ((interrupt)) GPIO_ODD_IRQHandler() 
 {
-  /* Clear GPIO interrutps */
+  /* Clear GPIO interrupts */
   *GPIO_IFC = 0xFF;
+  buttons_gpio_irq();
 }
