@@ -22,14 +22,21 @@ static inline uint8_t buttons_raw_state (void)
 void buttons_debounce (void)
 {
   uint8_t i,j;
+
   prev_debounced_state = debounced_state;
-  state[btn_index] = buttons_raw_state ();
-  ++btn_index;
-  j = 0xff;
-  for(i = 0; i < MAX_CHECKS; i++)
-  j = j & state[i];
+  state[btn_index++] = buttons_raw_state ();
+
+  for (i = 0, j = 0xFF; i < MAX_CHECKS; i++)
+  {
+    j = j & state[i];
+  }
+
   debounced_state = j;
-  if (btn_index>=MAX_CHECKS) btn_index=0;
+
+  if (btn_index >= MAX_CHECKS)
+  {
+    btn_index = 0;
+  }
 }
 
 void buttons_update (uint8_t button)
