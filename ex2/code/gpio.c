@@ -11,7 +11,7 @@ void setupGPIO()
   /* TODO set input and output pins for the joystick */
   *GPIO_EXTIPSELL = 0x22222222; /* Set external interrupts on PORT C */
   *GPIO_EXTIFALL = 0xFF;
-  *GPIO_EXTIRISE = 0xFF;
+  //*GPIO_EXTIRISE = 0xFF;
 
   /* Configure buttons on PORT C */
   *GPIO_PC_MODEL = 0x33333333;

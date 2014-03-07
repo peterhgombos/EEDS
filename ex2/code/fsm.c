@@ -9,63 +9,48 @@ static uint8_t st_init_ev_any (void)
 {
   /* TODO: Play startup sound */
   /* TODO: Select first song */
-  *GPIO_PA_DOUT = 1 << 8;
   return ST_PAUSED;
 }
 
 static uint8_t st_paused_ev_next (void)
 {
   /* TODO: Select next song */
-  //*GPIO_PA_DOUT = 0x0F00;
-
-  *GPIO_PA_DOUT = 2 << 8;
   return ST_PAUSED;
 }
 
 static uint8_t st_paused_ev_prev (void)
 {
   /* TODO: Select previous song */
-  //*GPIO_PA_DOUT = 0x00F0;
-
-  *GPIO_PA_DOUT = 3 << 8;
   return ST_PAUSED;
 }
 
 static uint8_t st_paused_ev_start (void)
 {
   /* TODO: Start playback */
-
-  *GPIO_PA_DOUT = 4 << 8;
   return ST_PLAYING;
 }
 
 static uint8_t st_playing_ev_next (void)
 {
   /* TODO: Select next song */
-
-  *GPIO_PA_DOUT = 4 << 8;
   return ST_PLAYING;
 }
 
 static uint8_t st_playing_ev_prev (void)
 {
   /* TODO: Select previous song */
-
-  *GPIO_PA_DOUT = 5 << 8;
   return ST_PLAYING;
 }
 
 static uint8_t st_playing_ev_start (void)
 {
   /* TODO: Select previous song */
-
-  *GPIO_PA_DOUT = 6 << 8;
   return ST_PLAYING;
 }
 
 static uint8_t st_playing_ev_finish (void)
 {
-  *GPIO_PA_DOUT = 7 << 8;
+  /* TODO: Stop playing */
   return ST_PAUSED;
 }
 
@@ -73,8 +58,6 @@ static uint8_t st_any_ev_any (void)
 {
   /* TODO: Disable playback */
   /* TODO: Select first song */
-
-  *GPIO_PA_DOUT = 8 << 8;
   return ST_PAUSED;
 }
 
@@ -101,9 +84,10 @@ void fsm_init (void)
   queue_init (&event_queue);
 }
 
-void fsm_update (void)
+uint8_t fsm_update (void)
 {
   fsm_event_t event = -1;
+  uint8_t ret_val = 0;
     
   // Receive event from queue
   if (!queue_pop(&event_queue, &event))
@@ -118,10 +102,13 @@ void fsm_update (void)
       if ((event == trans[i].ev) || (EV_ANY == trans[i].ev))
       {
         state = (trans[i].fn)();
+        ret_val = 1;
         break;
       }
     }
   }
+
+  return ret_val;
 }
 
 uint8_t fsm_event_put (fsm_event_t event)
