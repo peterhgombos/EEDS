@@ -9,7 +9,7 @@
 #define EV_NEXT     50
 #define EV_PREV     51
 #define EV_START    53
-#define EV_FINISH   54
+#define EV_STOP     54
 #define EV_ANY      99
 
 #define FSM_EVENT_QUEUE_LEN 10

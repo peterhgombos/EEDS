@@ -13,7 +13,7 @@
 #define BUTTON_RIGHT_RIGHT  6
 #define BUTTON_RIGHT_DOWN   7
 
-void buttons_debounce (void);
-void buttons_update (uint8_t button);
+void buttons_gpio_irq (void);
+void buttons_timer_irq (void);
 
 #endif /* BUTTONS_H_ */
