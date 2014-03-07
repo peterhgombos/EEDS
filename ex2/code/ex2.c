@@ -3,6 +3,7 @@
 
 #include "buttons.h"
 #include "fsm.h"
+#include "songs.h"
 
 #include "efm32gg.h"
 
@@ -34,6 +35,7 @@ int main(void)
   /* Enable interrupt handling */
   setupNVIC();
 
+  songs_init();
   fsm_init();
 
   while(1)
