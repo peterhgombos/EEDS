@@ -32,7 +32,10 @@ int main(void)
 
   fsm_init();
 
-  while(1);
+  while(1)
+  {
+    fsm_update();
+  }
 
   return 0;
 }
