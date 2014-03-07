@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "fsm.h"
+
 #include "efm32gg.h"
 
 /* 
@@ -27,6 +29,10 @@ int main(void)
 
   /* Enable interrupt handling */
   setupNVIC();
+
+  fsm_init();
+
+  while(1);
 
   return 0;
 }
