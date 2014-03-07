@@ -3,6 +3,7 @@
 
 #include "efm32gg.h"
 
+#include "buttons.h"
 #include "fsm.h"
 #include "wish.h"
 
@@ -19,9 +20,13 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
 
   /* Update LEDs */
   //*GPIO_PA_DOUT = count++;
-  //*GPIO_PA_DOUT = 0x00FF; /* turn on LEDs D4-D8 (LEDs are active low) */
-  //*GPIO_PA_DOUT = 0xFF00; /* turn on LEDs D4-D8 (LEDs are active low) */
 
+  /* Check for new events */
+  buttons_debounce();
+  buttons_update (BUTTON_LEFT_LEFT);
+  buttons_update (BUTTON_LEFT_UP);
+  buttons_update (BUTTON_LEFT_RIGHT);
+  buttons_update (BUTTON_LEFT_DOWN);
   fsm_update();
 }
 
