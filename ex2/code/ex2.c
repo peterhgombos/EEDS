@@ -4,6 +4,7 @@
 #include "buttons.h"
 #include "dac.h"
 #include "fsm.h"
+#include "gpio.h"
 #include "songs.h"
 #include "timer.h"
 
@@ -14,13 +15,12 @@
 #define   BUTTON_PERIOD   11200
 
 /* Declaration of peripheral setup functions */
-void setupGPIO();
 void setupNVIC();
 
 int main(void) 
 {  
   /* Call the peripheral setup functions */
-  setupGPIO();
+  gpio_init();
   timer1_init(SAMPLE_PERIOD);
   timer2_init(BUTTON_PERIOD);
 
