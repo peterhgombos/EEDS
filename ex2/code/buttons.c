@@ -69,6 +69,7 @@ static void m_debounce (void)
 
 void buttons_gpio_irq (void)
 {
+  *SCR &= ~SCR_SLEEPDEEP;      /* Use energy mode 1 */
   timer2_enable();
 }
 

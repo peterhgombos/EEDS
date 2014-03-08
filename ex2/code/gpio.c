@@ -6,6 +6,11 @@
 
 #include "buttons.h"
 
+static inline void m_irq (void)
+{
+  buttons_gpio_irq();
+}
+
 /* function to set up GPIO mode and interrupts*/
 void gpio_init (void)
 {
@@ -32,7 +37,7 @@ void __attribute__ ((interrupt)) GPIO_EVEN_IRQHandler()
 {
   /* Clear GPIO interrupts */
   *GPIO_IFC = 0xFF;
-  buttons_gpio_irq();
+  m_irq();
 }
 
 /* GPIO odd pin interrupt handler */
@@ -40,5 +45,5 @@ void __attribute__ ((interrupt)) GPIO_ODD_IRQHandler()
 {
   /* Clear GPIO interrupts */
   *GPIO_IFC = 0xFF;
-  buttons_gpio_irq();
+  m_irq();
 }

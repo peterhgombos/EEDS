@@ -32,9 +32,13 @@ int main(void)
   songs_init();
   fsm_init();
 
+  *SCR &= ~SCR_SLEEPONEXIT;   /* Don't sleep on return from an ISR */
+  *SCR |= SCR_SLEEPDEEP;      /* Use energy mode 2 when sleeping */
+
   while(1)
   {
     fsm_update();
+    __asm__("wfi");
   }
 
   return 0;
