@@ -26,3 +26,19 @@ void gpio_init (void)
   *GPIO_IFC = 0xFF; /* Clear interrupts before enabling */
   *GPIO_IEN = 0xFF; /* Enable all external interrupts */
 }
+
+/* GPIO even pin interrupt handler */
+void __attribute__ ((interrupt)) GPIO_EVEN_IRQHandler() 
+{
+  /* Clear GPIO interrupts */
+  *GPIO_IFC = 0xFF;
+  buttons_gpio_irq();
+}
+
+/* GPIO odd pin interrupt handler */
+void __attribute__ ((interrupt)) GPIO_ODD_IRQHandler() 
+{
+  /* Clear GPIO interrupts */
+  *GPIO_IFC = 0xFF;
+  buttons_gpio_irq();
+}
