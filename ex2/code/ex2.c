@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "buttons.h"
+#include "dac.h"
 #include "fsm.h"
 #include "songs.h"
 
@@ -15,16 +16,16 @@
 void setupGPIO();
 void setupTimer1(uint32_t period);
 void setupTimer2(uint32_t period);
-void setupDAC();
 void setupNVIC();
 
 int main(void) 
 {  
   /* Call the peripheral setup functions */
   setupGPIO();
-  setupDAC();
   setupTimer1(SAMPLE_PERIOD);
   setupTimer2(BUTTON_PERIOD);
+
+  dac_init();
 
   /* Enable interrupt handling */
   setupNVIC();
