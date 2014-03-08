@@ -8,6 +8,8 @@
 #include "buttons.h"
 #include "songs.h"
 
+static uint8_t playing;
+
 /* Timer 1 is used to feed the DAC */
 void timer1_init (uint16_t period)
 {
@@ -22,6 +24,9 @@ void timer1_init (uint16_t period)
 
 void timer1_enable (void)
 {
+  playing = 1;
+  *SCR &= ~SCR_SLEEPDEEP;                         /* Use energy mode 1 */
+
   *CMU_HFPERCLKEN0 |= CMU2_HFPERCLKEN0_TIMER1;    /* Enable clock */
   *TIMER1_CMD = 1;                                /* Enable timer 1 */
 }
@@ -30,6 +35,9 @@ void timer1_disable (void)
 {
   *TIMER1_CMD = 0;                                /* Disable timer 1 */
   *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER1;   /* Disable clock */
+
+  playing = 0;
+  *SCR |= SCR_SLEEPDEEP;                          /* Use energy mode 2 */
 }
 
 /* Timer 2 is used for sampling buttons */
@@ -46,6 +54,8 @@ void timer2_init (uint16_t period)
 
 void timer2_enable (void)
 {
+  *SCR &= ~SCR_SLEEPDEEP;                         /* Use energy mode 1 */
+
   *CMU_HFPERCLKEN0 |= CMU2_HFPERCLKEN0_TIMER2;    /* Enable clock */
   *TIMER2_CMD = 1;                                /* Enable timer 2 */
 }
@@ -54,6 +64,11 @@ void timer2_disable (void)
 {
   *TIMER2_CMD = 0;                                /* Disable timer 2 */
   *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER2;   /* Disable clock */
+
+  if (!playing)
+  {
+    *SCR |= SCR_SLEEPDEEP;                          /* Use energy mode 2 */
+  }
 }
 
 /* TIMER1 interrupt handler */
