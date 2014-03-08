@@ -1,8 +1,8 @@
 #include <stdint.h>
 
+#include "buttons.h"
 #include "efm32gg.h"
 
-#include "buttons.h"
 #include "fsm.h"
 #include "timer.h"
 

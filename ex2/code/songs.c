@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "songs.h"
 #include "efm32gg.h"
 
-#include "songs.h"
 #include "resources/airhorn.h"
 
 #define QUEUE_SIZE 5

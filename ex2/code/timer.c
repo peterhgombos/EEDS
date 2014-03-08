@@ -1,7 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "timer.h"
 #include "efm32gg.h"
+
+#include "buttons.h"
 
 /* Timer 1 is used to feed the DAC */
 void timer1_init (uint16_t period)
