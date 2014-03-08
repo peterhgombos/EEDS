@@ -1,10 +1,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "fsm.h"
 #include "timer.h"
 #include "efm32gg.h"
 
 #include "buttons.h"
+#include "songs.h"
 
 /* Timer 1 is used to feed the DAC */
 void timer1_init (uint16_t period)
@@ -57,13 +59,25 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
   /* Clear timer 1 interrupt */
   *TIMER1_IFC = 1;
 
-  /* TODO: Update DAC */
+  static int count = 0;
+
+  song_t current_song = songs_current_get();
+
+  if (count < current_song.notes_size) {
+    *DAC0_CH0DATA = current_song.notes[count];
+    count++;
+  }
+  else
+  {
+    count = 0;
+    fsm_event_put(EV_STOP);
+  }
 }
 
 /* TIMER2 interrupt handler */
 void __attribute__ ((interrupt)) TIMER2_IRQHandler()
 {
-  /* Clear timer 1 interrupt */
+  /* Clear timer 2 interrupt */
   *TIMER2_IFC = 1;
   buttons_timer_irq();
 }
