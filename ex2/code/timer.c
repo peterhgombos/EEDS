@@ -12,9 +12,12 @@
 void timer1_init (uint16_t period)
 {
   *CMU_HFPERCLKEN0 |= CMU2_HFPERCLKEN0_TIMER1;    /* Enable clock to TIMER 1 */
+
   *TIMER1_TOP = period;                           /* Set interrupt period */
   *TIMER1_IEN |= (1 << 0);                        /* Enable overflow interrupt */
   *ISER0 |= (1 << 12);                            /* Enable timer 1 interrupt request line */
+
+  *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER1;   /* Disable clock */
 }
 
 void timer1_enable (void)
