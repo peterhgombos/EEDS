@@ -4,6 +4,7 @@
 
 #include "buttons.h"
 #include "fsm.h"
+#include "timer.h"
 
 #define MAX_CHECKS 10
 #define NUM_BUTTONS 8
@@ -20,19 +21,6 @@ static inline uint8_t m_raw_state (void)
     /* Only select switches from the port */
     return ~(*GPIO_PC_DIN);
 }
-
-static inline void m_timer_start (void)
-{
-  *CMU_HFPERCLKEN0 |= CMU2_HFPERCLKEN0_TIMER2;
-  *TIMER2_CMD = 1;
-}
-
-static inline void m_timer_stop (void)
-{
-  *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER2;
-  *TIMER2_CMD = 0;
-}
-
 
 static void m_update (uint8_t button)
 {
@@ -81,7 +69,7 @@ static void m_debounce (void)
 
 void buttons_gpio_irq (void)
 {
-  m_timer_start();
+  timer2_enable();
 }
 
 void buttons_timer_irq (void)
@@ -89,7 +77,7 @@ void buttons_timer_irq (void)
   /* Disable timer if required */
   if (MAX_CHECKS == timer_counter++)
   {
-    m_timer_stop();
+    timer2_disable();
     return;
   }
 
