@@ -60,7 +60,6 @@ static uint8_t st_playing_ev_stop (void)
 static uint8_t st_any_ev_any (void)
 {
   songs_stop();
-  songs_first();
   return ST_PAUSED;
 }
 
@@ -85,13 +84,14 @@ void fsm_init (void)
 {
   state = ST_INIT;
   queue_init (&event_queue);
+  fsm_event_put(EV_ANY);
 }
 
 uint8_t fsm_update (void)
 {
   fsm_event_t event = -1;
   uint8_t ret_val = 0;
-    
+
   // Receive event from queue
   if (!queue_pop(&event_queue, &event))
   {
