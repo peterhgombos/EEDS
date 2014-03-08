@@ -1,9 +1,9 @@
 #include <stdint.h>
 
+#include "fsm.h"
 #include "efm32gg.h"
 
 #include "queue.h"
-#include "fsm.h"
 #include "songs.h"
 
 static uint8_t st_init_ev_any (void)

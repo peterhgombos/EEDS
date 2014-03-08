@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "dac.h"
 #include "efm32gg.h"
 
 void dac_init (void)

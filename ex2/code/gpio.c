@@ -1,7 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "gpio.h"
 #include "efm32gg.h"
+
+#include "buttons.h"
 
 /* function to set up GPIO mode and interrupts*/
 void gpio_init (void)
