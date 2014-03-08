@@ -50,3 +50,20 @@ void timer2_disable (void)
   *TIMER2_CMD = 0;                                /* Disable timer 2 */
   *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER2;   /* Disable clock */
 }
+
+/* TIMER1 interrupt handler */
+void __attribute__ ((interrupt)) TIMER1_IRQHandler() 
+{
+  /* Clear timer 1 interrupt */
+  *TIMER1_IFC = 1;
+
+  /* TODO: Update DAC */
+}
+
+/* TIMER2 interrupt handler */
+void __attribute__ ((interrupt)) TIMER2_IRQHandler()
+{
+  /* Clear timer 1 interrupt */
+  *TIMER2_IFC = 1;
+  buttons_timer_irq();
+}
