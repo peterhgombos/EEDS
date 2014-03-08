@@ -5,6 +5,7 @@
 #include "dac.h"
 #include "fsm.h"
 #include "songs.h"
+#include "timer.h"
 
 #include "efm32gg.h"
 
@@ -14,16 +15,14 @@
 
 /* Declaration of peripheral setup functions */
 void setupGPIO();
-void setupTimer1(uint32_t period);
-void setupTimer2(uint32_t period);
 void setupNVIC();
 
 int main(void) 
 {  
   /* Call the peripheral setup functions */
   setupGPIO();
-  setupTimer1(SAMPLE_PERIOD);
-  setupTimer2(BUTTON_PERIOD);
+  timer1_init(SAMPLE_PERIOD);
+  timer2_init(BUTTON_PERIOD);
 
   dac_init();
 
