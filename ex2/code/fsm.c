@@ -93,16 +93,12 @@ uint8_t fsm_update (void)
   uint8_t ret_val = 0;
 
   // Receive event from queue
-  if (!queue_pop(&event_queue, &event))
+  while (queue_pop(&event_queue, &event))
   {
-    return ret_val;
-  }
-
-  for (int i = 0; i < TRANS_COUNT; i++)
-  {
-    if ((state == trans[i].st) || (ST_ANY == trans[i].st))
+    for (int i = 0; i < TRANS_COUNT; i++)
     {
-      if ((event == trans[i].ev) || (EV_ANY == trans[i].ev))
+      if (((state == trans[i].st) || (ST_ANY == trans[i].st))
+       && ((event == trans[i].ev) || (EV_ANY == trans[i].ev)))
       {
         state = (trans[i].fn)();
         ret_val = 1;
