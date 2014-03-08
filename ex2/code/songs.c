@@ -4,10 +4,12 @@
 #include "efm32gg.h"
 
 #include "songs.h"
+#include "resources/airhorn.h"
 
 #define QUEUE_SIZE 5
 
-static unsigned char songs[QUEUE_SIZE];
+unsigned char *sample;
+static song_t songs[QUEUE_SIZE];
 static uint8_t position;
 
 void songs_init (void)
@@ -52,5 +54,9 @@ void songs_play (void)
 }
 
 void songs_stop (void)
+{
+}
+
+void songs_playback (void)
 {
 }

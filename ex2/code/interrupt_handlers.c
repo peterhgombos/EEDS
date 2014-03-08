@@ -5,7 +5,7 @@
 
 #include "buttons.h"
 #include "fsm.h"
-#include "wish.h"
+#include "songs.h"
 
 /* TIMER1 interrupt handler */
 void __attribute__ ((interrupt)) TIMER1_IRQHandler() 
@@ -21,7 +21,6 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
   /* Update LEDs */
   //*GPIO_PA_DOUT = count++;
 
-  fsm_update();
 }
 
 /* TIMER2 interrupt handler */

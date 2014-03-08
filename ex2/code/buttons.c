@@ -21,9 +21,16 @@ static inline uint8_t m_raw_state (void)
     return ~(*GPIO_PC_DIN);
 }
 
+static inline void m_timer_start (void)
+{
+  *CMU_HFPERCLKEN0 |= CMU2_HFPERCLKEN0_TIMER2;
+  *TIMER2_CMD = 1;
+}
+
 static inline void m_timer_stop (void)
 {
-    *TIMER2_CMD |= (1 << 1);
+  *CMU_HFPERCLKEN0 &= ~CMU2_HFPERCLKEN0_TIMER2;
+  *TIMER2_CMD = 0;
 }
 
 
@@ -74,7 +81,7 @@ static void m_debounce (void)
 
 void buttons_gpio_irq (void)
 {
-  *TIMER2_CMD |= (1 << 0);
+  m_timer_start();
 }
 
 void buttons_timer_irq (void)
