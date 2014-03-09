@@ -1,1 +1,33 @@
 \subsection{Music playback}
+
+\subsubsection{Song selection}
+
+\subsubsection{Music generation}
+
+Songs are exported to 8-bit wave files at 22.05 kilohertz,
+ran through a converter script which generates its struct-wrapped\ref{lst:song-struct} C
+representation, and finally included through header files and loaded into memory at startup.
+
+\lstinputlisting[caption={Song struct}, label={lst:song-struct}, linerange={4-9}]{../code/songs.h}
+
+Each integer in the notes array represents the amplitude at that sample point.
+The lower frequency (exactly half of 44.1 kilohertz) was chosen to conserve space, as the integer representation of a wave file can be 5 to 10 times the size of the original.
+
+Stereo support is present, and if the field is set to 1, samples will alternatingly be piped to the left and right channel output of the DAC.
+
+\subsubsection{Playback}
+
+Music is played by feeding the DAC a new sample every nth clock cyle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634 $th cycle in our case).
+
+A timer is set up with the previously calculated interrupt period, with its interrupt handler \ref{lst:feeding-the-dac} tasked with pushing the next sound sample of the currently selected song to the DAC.
+
+The timer is suspended initially, but reenables when a song is to be played (when the FSM receives an $ EV\_PLAY $ event).
+Once it has been fed all available samples, the $ EV\_STOP $ event is pushed onto the state machine, suspending our song timer, and returning the system to deep sleep mode.
+
+\lstinputlisting[caption={Feeding the DAC}, label={lst:feeding-the-dac}, linerange={75-101}]{../code/timer.c}
+
+The DAC itself is prescaled by $ 2^{7} $ (the maximum possible) and set to Sample / Hold mode.
+The lowered frequency, combined with the DAC core shutting down when not converting samples increases energy efficiency greatly during playback\cite{referencemanual}.
+
+\subsubsection{Further improvements}
+

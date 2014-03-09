@@ -76,9 +76,7 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
 {
   /* Clear timer 1 interrupt */
   *TIMER1_IFC = 1;
-
   static int count = 0;
-
   song_t current_song = songs_current_get();
 
   if (count < current_song.notes_size)
