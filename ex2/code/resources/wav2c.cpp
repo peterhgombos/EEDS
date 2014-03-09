@@ -35,36 +35,41 @@ int main(int argc, char *argv[])
 	strcpy(p, ".h");
 	FILE *fo = fopen(s, "wt");
 	if (!fo) { printf("Could not open output file!\n"); return -1; }
-	printf("lol\n");
 	fseek(fi, 0x28, SEEK_SET);
 	p = strrchr(s, '\\'); if (p) s = p+1;
 	p = strrchr(s, '/'); if (p) s = p+1;
 	p = strrchr(s, '.'); if (p) *p = 0;
 
-    /* Create wrapper struct */
-    fprintf(fo, "struct song-%s {\n", s);
-    
-    /* Set stereo */
-    fprintf(fo, "\tint is_stereo = %d;\n", is_stereo);
+  /* Import song header */
+  fprintf(fo, "#include \"../songs.h\"\n\n");
 
-    /* Create note array */
-	fprintf(fo, "\tconst unsigned char notes[] =\n\t{");
+  /* Create note array */
+	fprintf(fo, "const uint8_t notes_%s[] =\n{", s);
 	int l=0;
 	while (1)
 	{
-		if (l++ % 100 == 0) { fprintf(fo, "\n\t\t"); }
+		if (l++ % 100 == 0) { fprintf(fo, "\n\t"); }
 		int a = fgetc(fi); if (a == EOF) break;
 		fprintf(fo, "%d,", a);
 	}
-	fprintf(fo, "\n\t};\n");	
+	fprintf(fo, "\n};\n\n");	
+  
+  /* Create struct */
+  fprintf(fo, "song_t %s = {\n", s);
 
-    /* Set array size */
-    fprintf(fo, "\tnotes_size = %d;\n", l);
+  /* Set stereo */
+  fprintf(fo, "\t.is_stereo = %d,\n", is_stereo);
 
-    /* Close struct */
-    fprintf(fo, "}\n");
+  /* Set notes */
+  fprintf(fo, "\t.notes = notes_%s,\n", s);
+
+  /* Set notes size */
+  fprintf(fo, "\t.notes_size = %d\n", l);
+
+  /* Close struct */
+  fprintf(fo, "};\n");
 
 	fclose(fi);
 	fclose(fo);
 	return 0;
-    }
+}
