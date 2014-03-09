@@ -19,6 +19,8 @@ void dac_enable (void)
 
 void dac_disable (void)
 {
+  *DAC0_CH0DATA = 0;
+  *DAC0_CH1DATA = 0;
   *DAC0_CH0CTRL &= ~(1 << 0);            /* Disable channel 0 */
   *DAC0_CH1CTRL &= ~(1 << 0);            /* Disable channel 1 */
   *CMU_HFPERCLKEN0 &= ~(1 << 17);        /* Enable clock to DAC */
