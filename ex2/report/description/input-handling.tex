@@ -1,1 +1,12 @@
 \subsection{Input handling}
+To prevent multiple inputs when pressing a button, a debouncer is used.
+As a button is pressed, an interrupt is fired. 
+This will wake the micro controller up from sleep mode, and then sends the signal to the debouncer, in buttons.c.
+As this method is called, a timer is set up.
+This is used to see how long since the last input, and if it's too short time between inputs, the method returns.
+If not, the debounce function in listing \ref{lst:debounce} is called.
+This is taken from \cite{debouncer}.
+
+\lstinputlisting[caption={Debouncer}, label={lst:debounce}, linerange={49-67}]{../code/buttons.c}
+
+As soon as the input is verified, it is added to the event queue for the state machine.
