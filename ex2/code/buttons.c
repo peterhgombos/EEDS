@@ -7,7 +7,6 @@
 #include "timer.h"
 
 #define MAX_CHECKS 10
-#define NUM_BUTTONS 8
 
 volatile uint8_t debounced_state;
 volatile uint8_t prev_debounced_state = 0xFF;
