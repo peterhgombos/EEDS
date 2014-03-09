@@ -14,4 +14,4 @@ set terminal png
 set out "startup.png"
 unset key
 
-plot "newdata/startup-new" using 1:2 with lines title "Polling" linecolor rgb "red" , \
+plot "startup-new" using 1:2 with lines title "Polling" linecolor rgb "red" , \
