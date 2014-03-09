@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	p = strrchr(s, '.'); if (p) *p = 0;
 
   /* Import song header */
-  fprintf(fo, "#include \"../songs.h\"\n\n");
+  fprintf(fo, "#include \"../../songs.h\"\n\n");
 
   /* Create note array */
 	fprintf(fo, "const uint8_t notes_%s[] =\n{", s);
