@@ -107,12 +107,15 @@ uint8_t fsm_update (void)
     }
   }
 
+  *SCR |= SCR_SLEEPONEXIT;                     /* Sleep on return from ISR */
+
   return ret_val;
 }
 
 uint8_t fsm_event_put (fsm_event_t event)
 {
-    return queue_push (&event_queue, event);
+  *SCR &= ~SCR_SLEEPONEXIT;                   /* Don't sleep on return from ISR */
+  return queue_push (&event_queue, event);
 }
 
 uint8_t fsm_get_state (void)
