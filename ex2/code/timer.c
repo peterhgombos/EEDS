@@ -85,16 +85,16 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
   {
     if (current_song.is_stereo == 1)
     {
-      *DAC0_CH0DATA = current_song.notes[count * 2];
-      *DAC0_CH1DATA = current_song.notes[count * 2 + 1];
+      *DAC0_CH0DATA = current_song.notes[count];
+      *DAC0_CH1DATA = current_song.notes[count + 1];
+      count += 2;
     }
     else
     {
       *DAC0_CH0DATA = current_song.notes[count];
       *DAC0_CH1DATA = current_song.notes[count];
+      count += 1;
     }
-
-    count++;
   }
   else
   {
