@@ -33,6 +33,11 @@ void songs_init (void)
   m_set_led_output();
 }
 
+void songs_intro (void)
+{
+  songs_play();
+}
+
 void songs_next (void)
 {
   if (SONG_QUEUE_SIZE - 1 > song_selected)
