@@ -10,8 +10,8 @@ set ytics (0.001, 0.01, 0.1, 1, 5)
 set xlabel "Time (s)"
 set ylabel "Current (mA)"
 
-set terminal pdf
-set out "all.pdf"
+set terminal png
+set out "startup.png"
 unset key
 
-plot "startup" using 1:2 with lines title "Polling" linecolor rgb "red" , \
+plot "newdata/startup-new" using 1:2 with lines title "Polling" linecolor rgb "red" , \
