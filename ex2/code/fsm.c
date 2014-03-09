@@ -47,8 +47,8 @@ static uint8_t st_playing_ev_prev (void)
 
 static uint8_t st_playing_ev_start (void)
 {
-  songs_play();
-  return ST_PLAYING;
+  songs_pause();
+  return ST_PAUSED;
 }
 
 static uint8_t st_playing_ev_stop (void)
