@@ -6,39 +6,42 @@
 #include "songs.h"
 #include "efm32gg.h"
 
-#include "resources/converted-wavs/airhorn.h"
-#include "resources/converted-wavs/smw1_1up_converted.h"
-#include "resources/converted-wavs/smw_coin.h"
+#include "resources/converted-wavs/intro.h"
+#include "resources/converted-wavs/smb_bowserfalls.h"
+#include "resources/converted-wavs/smb_coin.h"
+#include "resources/converted-wavs/smb_pipe.h"
 
-#define SONG_QUEUE_SIZE 2 /* Current logic assumes max queue size of 8 */
+#define SONG_QUEUE_SIZE 4 /* Current logic assumes max queue size of 8 */
 
 unsigned char *sample;
 static song_t songs[SONG_QUEUE_SIZE];
-static uint8_t position;
+static uint8_t song_playing;
+static uint8_t song_selected;
 
 static void m_set_led_output(void)
 {
-  *GPIO_PA_DOUT = ~(1 << (8 + position));
+  *GPIO_PA_DOUT = ~(1 << (8 + song_selected));
 }
 
 void songs_init (void)
 {
-  songs[0] = airhorn;
-  songs[1] = smw1_1up_converted;
-  songs[2] = smw_coin;
+  songs[0] = intro;
+  songs[1] = smb_bowserfalls;
+  songs[2] = smb_coin;
+  songs[3] = smb_pipe;
 
   m_set_led_output();
 }
 
 void songs_next (void)
 {
-  if (SONG_QUEUE_SIZE > position)
+  if (SONG_QUEUE_SIZE - 1 > song_selected)
   {
-    position++;
+    song_selected++;
   }
   else
   {
-    position = 0;
+    song_selected = 0;
   }
 
   m_set_led_output();
@@ -46,13 +49,13 @@ void songs_next (void)
 
 void songs_prev (void)
 {
-  if (0 < position)
+  if (0 < song_selected)
   {
-    position--;
+    song_selected--;
   }
   else
   {
-    position = SONG_QUEUE_SIZE;
+    song_selected = SONG_QUEUE_SIZE - 1;
   }
 
   m_set_led_output();
@@ -60,6 +63,8 @@ void songs_prev (void)
 
 void songs_play (void)
 {
+  song_playing = song_selected;
+
   dac_enable();
   timer1_enable();
 }
@@ -81,5 +86,5 @@ void songs_playback (void)
 
 song_t songs_current_get (void)
 {
-  return songs[position];
+  return songs[song_playing];
 }
