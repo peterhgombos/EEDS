@@ -9,7 +9,7 @@ typedef struct
 } song_t;
 
 void songs_init (void);
-void songs_first (void);
+void songs_intro (void);
 void songs_next (void);
 void songs_prev (void);
 void songs_play (void);

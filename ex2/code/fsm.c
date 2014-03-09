@@ -8,8 +8,7 @@
 
 static uint8_t st_init_ev_any (void)
 {
-  /* TODO: Play startup sound */
-  /* TODO: Select first song */
+  songs_intro();
   return ST_PAUSED;
 }
 
@@ -21,14 +20,12 @@ static uint8_t st_paused_ev_next (void)
 
 static uint8_t st_paused_ev_prev (void)
 {
-  /* TODO: Select previous song */
   songs_prev();
   return ST_PAUSED;
 }
 
 static uint8_t st_paused_ev_start (void)
 {
-  /* TODO: Start playback */
   songs_play();
   return ST_PLAYING;
 }
