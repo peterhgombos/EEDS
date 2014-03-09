@@ -11,7 +11,7 @@
 #include "efm32gg.h"
 
 /* The period between sound samples, in clock cycles. Set to 44.1kHz */
-#define   SAMPLE_PERIOD   317
+#define   SAMPLE_PERIOD   634 // (317 * 2)
 #define   BUTTON_PERIOD   11200
 
 /* Declaration of peripheral setup functions */
