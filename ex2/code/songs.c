@@ -6,9 +6,9 @@
 #include "songs.h"
 #include "efm32gg.h"
 
-#include "resources/airhorn.h"
-#include "resources/smw1_1up_converted.h"
-#include "resources/smw_coin.h"
+#include "resources/converted-wavs/airhorn.h"
+#include "resources/converted-wavs/smw1_1up_converted.h"
+#include "resources/converted-wavs/smw_coin.h"
 
 #define SONG_QUEUE_SIZE 2 /* Current logic assumes max queue size of 8 */
 
