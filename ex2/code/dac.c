@@ -6,7 +6,8 @@
 
 void dac_init (void)
 {
-  *DAC0_CTRL |= (1 << 18) || (1 << 16); /* Set prescaler to 2^5 */
+  *DAC0_CTRL |= (1 << 18) || (1 << 17) || (1 << 16); /* Set prescaler to 2^7 */
+  *DAC0_CTRL |= (1 << 3);               /* Set convmode to sample-hold */
   *DAC0_CTRL |= (1 << 4);               /* Set outmode to PIN */
 }
 
