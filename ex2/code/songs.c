@@ -7,9 +7,10 @@
 #include "efm32gg.h"
 
 #include "resources/airhorn.h"
-//#include "resources/wishyou.h"
+#include "resources/smw1_1up_converted.h"
+#include "resources/smw_coin.h"
 
-#define SONG_QUEUE_SIZE 1 /* Current logic assumes max queue size of 8 */
+#define SONG_QUEUE_SIZE 2 /* Current logic assumes max queue size of 8 */
 
 unsigned char *sample;
 static song_t songs[SONG_QUEUE_SIZE];
@@ -23,7 +24,9 @@ static void m_set_led_output(void)
 void songs_init (void)
 {
   songs[0] = airhorn;
-  //songs[1] = wishyou;
+  songs[1] = smw1_1up_converted;
+  songs[2] = smw_coin;
+
   m_set_led_output();
 }
 
@@ -59,6 +62,11 @@ void songs_play (void)
 {
   dac_enable();
   timer1_enable();
+}
+
+void songs_pause (void)
+{
+  timer1_disable();
 }
 
 void songs_stop (void)
