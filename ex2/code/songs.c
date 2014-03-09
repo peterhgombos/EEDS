@@ -81,8 +81,8 @@ void songs_pause (void)
 
 void songs_stop (void)
 {
-  timer1_disable();
   dac_disable();
+  timer1_disable();
 }
 
 void songs_playback (void)
