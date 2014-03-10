@@ -1,6 +1,6 @@
 \subsection{Music playback}
 
-\subsubsection{General behaviour}
+\subsubsection{General behavior}
 
 The current implementation of the music player provides a framework for playing any sound clip, as long as it fulfills the struct specification \ref{lst:song-struct}.
 The program comes preloaded with a number of sound samples and songs, including music played during system boot.
@@ -19,7 +19,7 @@ The lower frequency (exactly half of 44.1 kilohertz) was chosen to conserve spac
 
 Stereo support is present, and if the field is set to 1, samples will alternatingly be piped to the left and right channel output of the DAC.
 
-The addition of a module which generates sounds at runtime can be added relatively, as the necessary hooks allready exist. It was however decided against for this deliverable, as sounds from the NES classic Super Mario would suffice for the time being.
+The addition of a module which generates sounds at runtime can be added relatively, as the necessary hooks already exist. It was however decided against for this deliverable, as sounds from the NES classic Super Mario would suffice for the time being.
 
 \subsubsection{Playback}
 
