@@ -43,7 +43,7 @@ As the implementation of those turned out to be rather complex, DMA in particula
 \begin{description}
   \item[Use low energy timer (LETIMER) for checking buttons.] \hfill \\
         In the current implementation, a normal timer is used for input detection. This is not necessary, as a low energy timer would be sufficient. 
-  \item[Use DMA to push samples to the DAC] \hfill \\
+  \item[Use DMA to push samples to the DAC] \hfill \\ \label{DMA} 
         With Direct Memory Access, it would be possible to stay in low energy mode when loading music to the DAC, saving a lot of energy.
 \end{description}
 
