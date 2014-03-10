@@ -28,7 +28,7 @@ To prevent this, all unused GPIO ports are turned off.
 
 \subsubsection{Disabling timers whenever possible}
 Any timer will use more power while it is active, so it is not good practice to leave them on.
-To save power, the button debounce timer is enabled in response to a GPIO interrupt, and the song timer is enbabled in response to a play event. 
+To save power, the button debounce timer is enabled in response to a GPIO interrupt, and the song timer is enabled in response to a play event. 
 
 \subsubsection{Using DAC in sample and hold mode}
 The DAC is configured in Sample/Hold Mode, which means that the DAC core is turned off between sample conversions.
