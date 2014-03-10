@@ -1,6 +1,10 @@
 \subsection{Music playback}
 
-\subsubsection{Song selection}
+\subsubsection{General behaviour}
+
+The current implementation of the music player provides a framework for playing any sound clip, as long as it fulfills the struct specification \ref{lst:song-struct}.
+The program comes preloaded with a number of sound samples and songs, including music played during system boot.
+
 
 \subsubsection{Music generation}
 
@@ -15,6 +19,8 @@ The lower frequency (exactly half of 44.1 kilohertz) was chosen to conserve spac
 
 Stereo support is present, and if the field is set to 1, samples will alternatingly be piped to the left and right channel output of the DAC.
 
+The addition of a module which generates sounds at runtime can be added relatively, as the necessary hooks allready exist. It was however decided against for this deliverable, as sounds from the NES classic Super Mario would suffice for the time being.
+
 \subsubsection{Playback}
 
 Music is played by feeding the DAC a new sample every nth clock cycle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634 $th cycle in our case).
@@ -28,6 +34,4 @@ Once it has been fed all available samples, the $ EV\_STOP $ event is pushed ont
 
 The DAC itself is prescaled by $ 2^{7} $ (the maximum possible) and set to Sample / Hold mode.
 The lowered frequency, combined with the DAC core shutting down when not converting samples increases energy efficiency greatly during playback\cite{referencemanual}.
-
-\subsubsection{Further improvements}
 
