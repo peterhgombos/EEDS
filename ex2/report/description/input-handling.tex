@@ -1,9 +1,9 @@
 \subsection{Input handling}
-To prevent multiple and unintended inputs from unstable button values, a debouncing routine is used to prevent signal propagation untill a stable value can be accuired.
+To prevent multiple and unintended inputs from unstable button values, a debouncing routine is used to prevent signal propagation until a stable value can be acquired.
 
 \begin{figure}[h]
     \includegraphics{figures/debounceswitcho.jpg}
-    \caption{Illustration of unstable button behaviour, taken from \cite{debouncer}}
+    \caption{Illustration of unstable button behavior, taken from \cite{debouncer}}
 \end{figure}
 When a GPIO interrupt is received, the GPIO interrupt handler starts a debounce timer which will run for a predefined number of cycles, before turning itself off again.
 The corresponding interrupt handler reads current  GPIO values, accepts them if the debouncing routine\ref{lst:debounce} deems the input stable, and reject them otherwise.
