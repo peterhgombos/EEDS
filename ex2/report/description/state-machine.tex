@@ -40,6 +40,6 @@ become unmaintainable.  Also to further maintainability, the state machine
 operates asynchronously of the events it reacts to. Interrupts generate events
 that are posted to a queue, and the state machine reads from the queue when the
 controller wakes up from sleep. This allows for quick return from interrupt
-service routines, which is a desirable feature. As it is more easily
+service routines. As it is more easily
 extensible, an implementation based on a table of function pointers was chosen
 for the state machine.
