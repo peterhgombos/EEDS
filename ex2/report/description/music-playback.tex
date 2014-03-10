@@ -17,11 +17,11 @@ Stereo support is present, and if the field is set to 1, samples will alternatin
 
 \subsubsection{Playback}
 
-Music is played by feeding the DAC a new sample every nth clock cyle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634 $th cycle in our case).
+Music is played by feeding the DAC a new sample every nth clock cycle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634 $th cycle in our case).
 
 A timer is set up with the previously calculated interrupt period, with its interrupt handler \ref{lst:feeding-the-dac} tasked with pushing the next sound sample of the currently selected song to the DAC.
 
-The timer is suspended initially, but reenables when a song is to be played (when the FSM receives an $ EV\_PLAY $ event).
+The timer is suspended initially, but re-enables when a song is to be played (when the FSM receives an $ EV\_PLAY $ event).
 Once it has been fed all available samples, the $ EV\_STOP $ event is pushed onto the state machine, suspending our song timer, and returning the system to deep sleep mode.
 
 \lstinputlisting[caption={Feeding the DAC}, label={lst:feeding-the-dac}, linerange={75-101}]{../code/timer.c}

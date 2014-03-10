@@ -17,7 +17,7 @@ As it's first the init code starting the sound, a step can be seen in the power 
 \subsection{Playing music}
 Figure \ref{fig:playpower} shows the power consumption of choosing a different song, and then playing that song.
 It can be seen how the micro controller goes to sleep right after the button interrupt, and after the song is done playing.
-Had DMA been implemented (see \vref{DMA}), the power consumption while playing sound would have been substansially lower.
+Had DMA been implemented (see \vref{DMA}), the power consumption while playing sound would have been substantially lower.
 
 \begin{figure}[H]
 \centering
@@ -28,7 +28,7 @@ Had DMA been implemented (see \vref{DMA}), the power consumption while playing s
 
 \subsection{Holding}
 When holding down a button, a peculiar pattern emerges (see figure \ref{fig:holdingpower}). 
-Theres a spike at first, and then a lower energy level.
+There's a spike at first, and then a lower energy level.
 This is because as a button is pressed, the circuit being first closed will generate more power.
 While not a wanted feature, there's is nothing to do about this.
 
