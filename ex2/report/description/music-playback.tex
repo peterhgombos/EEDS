@@ -2,20 +2,20 @@
 
 \subsubsection{General behavior}
 
-The current implementation of the music player provides a framework for playing any sound clip, as long as it fulfills the struct specification \ref{lst:song-struct}.
+The current implementation of the music player provides a framework for playing any sound clip, as long as it fulfills the struct specification in listing \ref{lst:song-struct}.
 The program comes preloaded with a number of sound samples and songs, including music played during system boot.
 
 
 \subsubsection{Music generation}
 
-Songs are exported to 8-bit wave files at 22.05 kilohertz,
-ran through a converter script which generates its struct-wrapped\ref{lst:song-struct} C
-representation, and finally included through header files and loaded into memory at startup.
+Songs are first exported to 8-bit wave files at 22.05 kilohertz.
+They are then ran through a converter script which generates the integer array representation of the waveform, and wrapped in the following struct \ref{lst:song-struct} containing additional metadata.
+The struct is then embedded in a header file and included in the program.
 
 \lstinputlisting[caption={Song struct}, label={lst:song-struct}, linerange={4-9}]{../code/songs.h}
 
 Each integer in the notes array represents the amplitude at that sample point.
-The lower frequency (exactly half of 44.1 kilohertz) was chosen to conserve space, as the integer representation of a wave file can be 5 to 10 times the size of the original.
+The lower frequency was chosen to conserve space, as the integer representation of a wave file can be 5 to 10 times the size of the original wave, and to allow easy downsampling from the more common 44.1 kHz format.
 
 Stereo support is present, and if the field is set to 1, samples will alternatingly be piped to the left and right channel output of the DAC.
 
@@ -23,7 +23,7 @@ The addition of a module which generates sounds at runtime can be added relative
 
 \subsubsection{Playback}
 
-Music is played by feeding the DAC a new sample every nth clock cycle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634 $th cycle in our case).
+Music is played by feeding the DAC a new sample every nth clock cycle, where n is the ratio between the clock speed of the CPU and the requested sample rate (every $ \frac{14 MHz}{22.05 KHz} = 634.9 $th cycle in our case).
 
 A timer is set up with the previously calculated interrupt period, with its interrupt handler \ref{lst:feeding-the-dac} tasked with pushing the next sound sample of the currently selected song to the DAC.
 
