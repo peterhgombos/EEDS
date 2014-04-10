@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 ptxdist clean driver-gamepad
 ptxdist clean game
 ptxdist go
