@@ -67,3 +67,4 @@
 *.vspscc
 .builds
 *.dotCover
+*.gdb
