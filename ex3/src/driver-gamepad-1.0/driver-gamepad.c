@@ -15,9 +15,21 @@
 
 #include "efm32gg.h"
 
-static int dev_open (struct inode *inode, struct file *filp);
-static int dev_release (struct inode *inode, struct file *filp);
-static ssize_t dev_read (struct file *filp, char *buff, size_t len, loff_t *off);
+static int dev_open (struct inode *inode, struct file *filp)
+{
+
+}
+
+static int dev_release (struct inode *inode, struct file *filp) 
+{
+
+}
+
+static ssize_t dev_read (struct file *filp, char *buff, size_t len, loff_t *off)
+
+{
+
+}
 
 
 static struct file_operations my_fops = {
@@ -64,9 +76,6 @@ static int __init template_init(void)
   /* Release GPIO memory */
   request_mem_region (GPIO_PC_BASE, 32, "gamepad");
 
-  /* Free IRQs, just in case */
-  free_irq(17, NULL);
-  free_irq(18, NULL);
 
   /* Register interrupt handler for odd and even GPIO pins */
   request_irq (17, (irq_handler_t)(m_irq), IRQF_DISABLED, "gamepad", (void *)(m_irq));
