@@ -16,20 +16,13 @@
 
 #include "efm32gg.h"
 
-static int gamepad_open (struct inode *inode, struct file *filp)
-{
-    return 0;
-}
+irqreturn_t m_irq (int irq, void *dev_id, struct pt_regs *regs);
+static int __init template_init(void);
+static void __exit template_cleanup(void);
+static int gamepad_open (struct inode *inode, struct file *filp);
+static int gamepad_release (struct inode *inode, struct file *filp);
+static ssize_t gamepad_read (struct file *filp, char *buff, size_t len, loff_t *off);
 
-static int gamepad_release (struct inode *inode, struct file *filp)
-{
-    return 0;
-}
-
-static ssize_t gamepad_read (struct file *filp, char *buff, size_t len, loff_t *off)
-{
-    return 1;
-}
 
 
 static struct file_operations gamepad_fops = {
