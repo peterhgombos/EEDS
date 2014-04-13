@@ -12,34 +12,37 @@
 #include <linux/interrupt.h>
 #include <linux/ioport.h>
 #include <linux/device.h>
+#include <asm/uaccess.h>
 
 #include "efm32gg.h"
 
-static int dev_open (struct inode *inode, struct file *filp)
+static int gamepad_open (struct inode *inode, struct file *filp)
 {
-
+    return 0;
 }
 
-static int dev_release (struct inode *inode, struct file *filp) 
+static int gamepad_release (struct inode *inode, struct file *filp)
 {
-
+    return 0;
 }
 
-static ssize_t dev_read (struct file *filp, char *buff, size_t len, loff_t *off)
-
+static ssize_t gamepad_read (struct file *filp, char *buff, size_t len, loff_t *off)
 {
-
+    return 1;
 }
 
 
-static struct file_operations my_fops = {
+static struct file_operations gamepad_fops = {
     .owner = THIS_MODULE,
-    .read = dev_read,
-    .open = dev_open,
-    .release = dev_release
+    .open = gamepad_open,
+    .release = gamepad_release,
+    .read = gamepad_read
 };
 
-static struct cdev my_cdev;
+static struct cdev gamepad_cdev;
+
+static dev_t devnum;
+static struct class *cl;
 
 /* Common GPIO interrupt handle */
 irqreturn_t m_irq (int irq, void *dev_id, struct pt_regs *regs)
@@ -63,9 +66,17 @@ static int __init template_init(void)
 {
   printk("Hello World!\n");
 
+  alloc_chrdev_region(&devnum, 0, 1, "gamepad");
+
   /* Initialize char device */
-  cdev_init (&my_cdev, &my_fops);
-  cdev_add (&my_cdev, 0, 1);
+  cdev_init (&gamepad_cdev, &gamepad_fops);
+  gamepad_cdev.owner = THIS_MODULE;
+  gamepad_cdev.ops = &gamepad_fops;
+  cdev_add (&gamepad_cdev, devnum, 1);
+
+  cl = class_create(THIS_MODULE, "gamepad");
+  device_create(cl, NULL, devnum, NULL, "gamepad");
+
 
   /* Configure GPIO interrupts */
   request_mem_region (GPIO_PA_BASE + 0x100, 28, "gamepad");
@@ -97,7 +108,7 @@ static void __exit template_cleanup(void)
   
   free_irq(1, NULL);
   release_mem_region (GPIO_PC_BASE, 32);
-  cdev_del (&my_cdev);
+  cdev_del (&gamepad_cdev);
 }
 
 
