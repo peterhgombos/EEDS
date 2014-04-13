@@ -36,12 +36,13 @@ static struct cdev gamepad_cdev;
 
 static dev_t devnum;
 static struct class *cl;
+static uint32_t input;
 
 /* Common GPIO interrupt handle */
 irqreturn_t m_irq (int irq, void *dev_id, struct pt_regs *regs)
 {
   *GPIO_IFC = 0xFF;
-  printk("Interrupt!\n");
+  input = ~(*GPIO_PC_DIN);
 
   return IRQ_HANDLED;
 }
@@ -104,6 +105,22 @@ static void __exit template_cleanup(void)
   cdev_del (&gamepad_cdev);
 }
 
+static int gamepad_open (struct inode *inode, struct file *filp)
+{
+    return 0;
+}
+
+static int gamepad_release (struct inode *inode, struct file *filp)
+{
+    return 0;
+}
+
+static ssize_t gamepad_read (struct file *filp, char *buff, size_t len, loff_t *off)
+{
+    /* copy to user the last input found */
+    copy_to_user(buff, &input, 1);
+    return 1;
+}
 
 module_init(template_init);
 module_exit(template_cleanup);
