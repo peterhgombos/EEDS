@@ -13,9 +13,9 @@ static FILE *gamepad;
 static void sig_handler (int signo)
 {
         (void) signo;
+	int input = fgetc(gamepad);
 
-        printf("sig_handler()\n");
-        /*printf("%s", fgetc(gamepad));*/
+        printf("%u\n\n", ~input);
 }
 
 static int gamepad_init (void)
