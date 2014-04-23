@@ -41,6 +41,7 @@
 #define GPIO_EXTIRISE  ((volatile u32*)(GPIO_PA_BASE + 0x108))
 #define GPIO_EXTIFALL  ((volatile u32*)(GPIO_PA_BASE + 0x10c))
 #define GPIO_IEN       ((volatile u32*)(GPIO_PA_BASE + 0x110))
+#define GPIO_IF	       ((volatile u32*)(GPIO_PA_BASE + 0x114))
 #define GPIO_IFC       ((volatile u32*)(GPIO_PA_BASE + 0x11c))
 
 // CMU
