@@ -5,6 +5,11 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "gameobjects.c"
+
+#define SCREEN_HEIGHT 20
+#define SCREEN_WIDTH 320
+
 static int gamepad_init (void);
 static void sig_handler (int signo);
 
@@ -46,8 +51,7 @@ static int gamepad_init (void)
 
 int main(int argc, char *argv[])
 {
-        printf ("Hello World, I'm game!\n");
-
+        printf("Hello World, I'm game!\n");
 
         /* Open gamepad char device */
         if (gamepad_init () == EXIT_FAILURE) {

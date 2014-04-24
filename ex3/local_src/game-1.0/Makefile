@@ -7,7 +7,7 @@
 # but don't remove the "+="
 #
 CFLAGS += -O2 -g -Wall -Wsign-compare -Wfloat-equal -Wformat-security -Werror
-CPPFLAGS += -O2 -g -Wall -Werror -mlong-calls
+#CPPFLAGS += -O2 -g -Wall -Werror -mlong-calls
 LDFLAGS +=
 
 
