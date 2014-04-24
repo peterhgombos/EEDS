@@ -14,8 +14,17 @@ static void sig_handler (int signo)
 {
         (void) signo;
 	int input = fgetc(gamepad);
+	int i;
 
-        printf("%u\n\n", ~input);
+	for (i = 0; i < 8; i++) {
+		if (input & 1)
+			printf("1");
+		else
+			printf("0");
+
+		input >>= 1;
+	}
+	printf("\n");
 }
 
 static int gamepad_init (void)
