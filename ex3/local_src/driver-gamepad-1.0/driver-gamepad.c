@@ -40,7 +40,7 @@ static struct class *cl;
 struct fasync_struct *async_queue;
 static dev_t devno;
 /* static uint32_t input; */
-/* static int use_count; */
+static int use_count;
 
 static const struct of_device_id dev_of_match[] = {
 	{
@@ -110,11 +110,9 @@ static int dev_open (struct inode *inode, struct file *filp)
 
 	printk("dev_open()\n");
 
-	/*
-	if (use_count++) {
+	if (use_count++ == 0) {
 		interrupt_enable ();
 	}
-	*/
 
 	return 0;
 }
@@ -240,11 +238,9 @@ static int dev_release (struct inode *inode, struct file *filp)
 
 	printk("dev_release()\n");
 
-	/*
 	if (--use_count == 0) {
 		interrupt_disable ();
 	}
-	*/
 
 	return 0;
 }
