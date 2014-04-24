@@ -34,18 +34,14 @@ static int gamepad_init (void)
             (fcntl(fileno(gamepad), F_SETOWN, getpid()) == -1)          ||
             (fcntl(fileno(gamepad), F_SETFL,
                   fcntl(fileno(gamepad), F_GETFL) | FASYNC) == -1)) {
+
                 printf("Couldn't initialize gamepad\n");
-                goto err;
+		return EXIT_FAILURE;
         }
 
         printf("Gamepad initialized\n");
 
         return EXIT_SUCCESS;
-err:
-        signal(SIGIO, SIG_DFL);
-        (void) fclose (gamepad);
-
-        return EXIT_FAILURE;
 }
 
 int main(int argc, char *argv[])
