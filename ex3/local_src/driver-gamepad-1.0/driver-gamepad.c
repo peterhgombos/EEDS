@@ -41,6 +41,7 @@ struct fasync_struct *async_queue;
 static dev_t devno;
 /* static uint32_t input; */
 static int use_count;
+static int button_state;
 
 static const struct of_device_id dev_of_match[] = {
 	{
@@ -79,7 +80,9 @@ irqreturn_t dev_irq (int irq, void *dev_id, struct pt_regs *regs)
 
 	iowrite32(0x000000FF, GPIO_IFC);
 
-	if (async_queue) {
+	button_state = ~(ioread32 (GPIO_PC_DIN)) & 0x0FF;
+
+	if (async_queue && button_state) {
 		kill_fasync (&async_queue, SIGIO, POLL_IN);
 	}
 
@@ -217,15 +220,12 @@ err_even:
 /* Read button presses on gamepad */
 static ssize_t dev_read (struct file *filp, char *buff, size_t len, loff_t *off)
 {
-	unsigned int data;
-
 	(void) filp;
 	(void) buff;
 	(void) len;
 	(void) off;
 
-	data = ioread32 (GPIO_PC_DIN);
-	copy_to_user (buff, &data, 1);
+	copy_to_user (buff, &button_state, 1);
 
 	return 1;
 }
