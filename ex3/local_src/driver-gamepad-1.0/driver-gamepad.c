@@ -82,7 +82,7 @@ irqreturn_t dev_irq (int irq, void *dev_id, struct pt_regs *regs)
 
 	button_state = ~(ioread32 (GPIO_PC_DIN)) & 0x0FF;
 
-	if (async_queue && button_state) {
+	if (async_queue) {
 		kill_fasync (&async_queue, SIGIO, POLL_IN);
 	}
 
@@ -135,6 +135,7 @@ static int dev_probe (struct platform_device *pdev)
 	/* Set external interrupts on PORT C */
 	iowrite32 (0x22222222, GPIO_EXTIPSELL);
 	iowrite32 (0x000000FF, GPIO_EXTIFALL);
+	iowrite32 (0x000000FF, GPIO_EXTIRISE);
 
 	/* Configure buttons on PORT C */
 	iowrite32 (0x33333333, GPIO_PC_MODEL);
