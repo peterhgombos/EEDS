@@ -74,6 +74,18 @@ void init_allegro (void)
     clear_to_color(buffer, H4CK3R_BL4CK);
 }
 
+puck puck_factory (int width, int height, int x, int y)
+{
+    return (puck) {
+        .width = width,
+        .height = height,
+        .pos = {
+            .x = x,
+            .y = y
+        }
+    };
+}
+
 void game_init (void)
 {
     if (DEVELOPMENT)
@@ -95,23 +107,17 @@ void game_init (void)
     int puck_width = 5;
     int edge_distance = 20;
 
-    player1 = (puck) {
-        .width = puck_width,
-        .height = puck_height,
-        .pos = {
-            .x = edge_distance,
-            .y = SCREEN_HEIGHT / 2 - puck_height / 2
-        }
-    };
+    player1 = puck_factory(
+            puck_width,
+            puck_height,
+            edge_distance,
+            SCREEN_HEIGHT / 2 - puck_height / 2);
 
-    player2 = (puck) {
-        .width = puck_width,
-        .height = puck_height,
-        .pos = {
-            .x = SCREEN_WIDTH - edge_distance - puck_width,
-            .y = SCREEN_HEIGHT / 2 - puck_height / 2
-        }
-    };
+    player2 = puck_factory(
+            puck_width,
+            puck_height,
+            SCREEN_WIDTH - edge_distance - puck_width,
+            SCREEN_HEIGHT / 2 - puck_height / 2);
 }
 
 void get_input (void)
