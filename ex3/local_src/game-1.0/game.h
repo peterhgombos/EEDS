@@ -1,12 +1,6 @@
 #ifndef __GAME_H__
 #define __GAME_H__
 
-#define YES 1
-#define NO 0
-#define SCREEN_HEIGHT 240
-#define SCREEN_WIDTH 320
-#define DEVELOPMENT 1
-
 #define PLAYER_1_UP 0
 #define PLAYER_1_DOWN 1
 #define PLAYER_1_LEFT 2

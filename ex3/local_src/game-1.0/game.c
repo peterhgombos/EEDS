@@ -1,5 +1,6 @@
 #include "game.h"
 #include "gamepad_buttons.h"
+#include "defines.h"
 
 #include <allegro.h>
 
