@@ -1,21 +1,13 @@
-#include <allegro.h>
-#include <time.h>
+#include "game.h"
+#include "gamepad_buttons.h"
 
+#include <allegro.h>
+
+#include <sys/time.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
-
-#include "gameobjects.c"
-
-#define YES 1
-#define NO 0
-#define SCREEN_HEIGHT 240
-#define SCREEN_WIDTH 320
-
-BITMAP *buffer;
 
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
@@ -24,45 +16,7 @@ puck player1;
 puck player2;
 ball pong;
 
-static int DEVELOPMENT = YES;
-
-static int gamepad_init (void);
-static void sig_handler (int signo);
-static FILE *gamepad;
-
-static void sig_handler (int signo)
-{
-    (void) signo;
-    int input = fgetc(gamepad);
-    int i;
-
-    for (i = 0; i < 8; i++) {
-        if (input & 1)
-            printf("1");
-        else
-            printf("0");
-
-        input >>= 1;
-    }
-    printf("\n");
-}
-
-static int gamepad_init (void)
-{
-    if (!(gamepad = fopen ("/dev/gamepad", "rb"))                   ||
-            (signal(SIGIO, &sig_handler) == SIG_ERR)                    ||
-            (fcntl(fileno(gamepad), F_SETOWN, getpid()) == -1)          ||
-            (fcntl(fileno(gamepad), F_SETFL,
-                   fcntl(fileno(gamepad), F_GETFL) | FASYNC) == -1)) {
-
-        printf("Couldn't initialize gamepad\n");
-        return EXIT_FAILURE;
-    }
-
-    printf("Gamepad initialized\n");
-
-    return EXIT_SUCCESS;
-}
+BITMAP *buffer;
 
 void init_allegro (void)
 {
@@ -100,8 +54,11 @@ void game_init (void)
     }
 
     srand(time(NULL));
-    H4CK3R_BL4CK = makecol(0, 0, 0);
-    H4CK3R_GR33N = makecol(0, 255, 0);
+
+    if (DEVELOPMENT) {
+        H4CK3R_BL4CK = makecol(0, 0, 0);
+        H4CK3R_GR33N = makecol(0, 255, 0);
+    }
 
     int puck_height = SCREEN_HEIGHT / 5;
     int puck_width = 5;
@@ -122,17 +79,29 @@ void game_init (void)
 
 void get_input (void)
 {
+    if (DEVELOPMENT) {
+        player_buttons[PLAYER_1_UP] = key[KEY_UP];
+        player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
 
+        printf("Input?");
+        for (int i=0; i<8; i++) {
+            printf("%d", player_buttons[i]);
+        }
+    } else {
+        // Parse cached values from gamepad drivers
+    }
 }
 
 void draw_game (void)
 {
     draw_puck(player1);
     draw_puck(player2);
-    draw_sprite(screen, buffer, 0, 0);
+
+    if (DEVELOPMENT) {
+        draw_sprite(screen, buffer, 0, 0);
+    }
 }
 
-/* Draw utility functions */
 void draw_puck(puck p)
 {
     // TODO: Only redraw if position changed
@@ -147,12 +116,40 @@ void draw_rectangle(position pos, int height, int width, int color)
     }
 }
 
+void update (void)
+{
+    printf("I am update :D\n");
+}
+
 void game_loop (void)
 {
+    struct timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    long previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+    long lag = 0;
+    long MS_PER_UPDATE = 16;
+
     while(YES) {
+
+        clock_gettime(CLOCK_REALTIME, &spec);
+        long current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+        long elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
         get_input();
+
+        while (lag >= MS_PER_UPDATE)
+        {
+            update();
+            lag -= MS_PER_UPDATE;
+        }
+
         draw_game();
-        sleep(1);
+
+        long sleep = MS_PER_UPDATE - lag;
+        printf("Total lag: %ld. Sleeping for %ld\n", lag, sleep);
+        sleep > 0 && usleep(sleep * 1000);
     }
 }
 
