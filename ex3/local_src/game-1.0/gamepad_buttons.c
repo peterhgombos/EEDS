@@ -3,14 +3,15 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-static void sig_handler (int signo)
+void sig_handler (int signo)
 {
     (void) signo;
-    cached_gamepad_buttons = fgetc(gamepad);
+    //cached_gamepad_buttons = fgetc(gamepad);
 }
 
-static int gamepad_init (void)
+int gamepad_init (void)
 {
     if (!(gamepad = fopen ("/dev/gamepad", "rb"))                       ||
             (signal(SIGIO, &sig_handler) == SIG_ERR)                    ||

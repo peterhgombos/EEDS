@@ -5,7 +5,7 @@
 
 static FILE *gamepad;
 
-static int gamepad_init (void);
-static void sig_handler (int signo);
+int gamepad_init (void);
+void sig_handler (int signo);
 
 #endif
