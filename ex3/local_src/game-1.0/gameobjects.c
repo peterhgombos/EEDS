@@ -2,22 +2,22 @@ typedef struct
 {
   int x;
   int y;
-} dimension;
+} position;
 
-struct puck
+typedef struct
 {
-  dimension pos;
-  int height;
   int width;
-};
+  int height;
+  position pos;
+} puck;
 
-struct ball
+typedef struct
 {
-  dimension pos;
   int radius;
-};
+  position pos;
+} ball;
 
 struct gameboard
 {
-  dimension dimensions;
+  position dimensions;
 };
