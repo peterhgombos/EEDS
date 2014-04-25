@@ -10,6 +10,8 @@
 
 #include "gameobjects.c"
 
+#define YES 1
+#define NO 0
 #define SCREEN_HEIGHT 240
 #define SCREEN_WIDTH 320
 
@@ -22,7 +24,7 @@ puck player1;
 puck player2;
 ball pong;
 
-static int DEVELOPMENT = 1;
+static int DEVELOPMENT = YES;
 
 static int gamepad_init (void);
 static void sig_handler (int signo);
@@ -141,7 +143,7 @@ void draw_rectangle(position pos, int height, int width, int color)
 
 void game_loop (void)
 {
-    while(1) {
+    while(YES) {
         get_input();
         draw_game();
         sleep(1);
