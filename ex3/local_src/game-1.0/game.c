@@ -104,6 +104,12 @@ void game_init (void)
     pong = puck_factory(5, DIRECTION_RIGHT, DIRECTION_UP, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 }
 
+void reset_puck (void)
+{
+    pong->pos.x = SCREEN_WIDTH / 2;
+    pong->pos.y = SCREEN_HEIGHT / 2;
+}
+
 void get_input (void)
 {
     #if DEVELOPMENT
@@ -171,6 +177,10 @@ void move_puck (puck *p)
 
     p->pos.y += p->direction.y;
     p->pos.x += p->direction.x;
+
+    if (p->pos.x <= 0 || p->pos.x > SCREEN_WIDTH) {
+        reset_puck();
+    }
 }
 
 int paddle_puck_overlap (paddle *pa, puck *pu)
