@@ -102,6 +102,7 @@ void get_input (void)
 
 void draw_game (void)
 {
+    clear_to_color(buffer, H4CK3R_BL4CK);
     draw_puck(player1);
     draw_puck(player2);
 
