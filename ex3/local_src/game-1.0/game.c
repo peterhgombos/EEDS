@@ -138,18 +138,6 @@ void draw_game (void)
     #endif
 }
 
-void draw_paddle(paddle *p)
-{
-    // TODO: Only redraw if position changed
-    draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
-}
-
-
-void draw_puck(puck *p)
-{
-    draw_rectangle(p->pos, p->radius, p->radius, H4CK3R_GR33N);
-}
-
 void update (void)
 {
     move_paddle(player1, PLAYER_1_UP, PLAYER_1_DOWN);

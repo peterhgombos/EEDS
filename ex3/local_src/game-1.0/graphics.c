@@ -12,6 +12,8 @@
 #include <sys/mman.h>
 
 
+extern int H4CK3R_GR33N;
+extern int H4CK3R_BL4CK;
 uint16_t *fbp;
 int fbfd;
 struct fb_copyarea rect;
@@ -39,7 +41,7 @@ void init_graphics (void)
             exit(2);
         }
         for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
-            fbp[i] = HACKERBLACK;
+            fbp[i] = H4CK3R_BL4CK;
         }
 
 }
@@ -69,12 +71,21 @@ void draw_rectangle(position pos, int height, int width, int color)
     #endif
 }
 
-void draw_puck(puck p)
+void draw_puck(puck *p)
 {
     // TODO: Only redraw if position changed
-    #if DEVELOPMENT
-        draw_rectangle(p.pos, p.height, p.width, H4CK3R_GR33N);
-    #else
-        draw_rectangle(p.pos, p.height, p.width, HACKERGREEN);
-    #endif
+    draw_rectangle(p->pos, p->radius, p->radius, H4CK3R_GR33N);
+}
+
+void draw_paddle(paddle *p)
+{
+    // TODO: Only redraw if position changed
+    draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
+}
+
+void clear_to_color(int color)
+{
+    for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
+        fbp[i] = color;
+    }
 }
