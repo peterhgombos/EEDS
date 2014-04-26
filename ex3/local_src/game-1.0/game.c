@@ -15,7 +15,7 @@ int H4CK3R_GR33N;
 
 paddle *player1;
 paddle *player2;
-puck pong;
+puck *pong;
 
 BITMAP *buffer;
 
@@ -35,6 +35,24 @@ paddle *paddle_factory (int width, int height, int x, int y)
     *p = (paddle) {
         .width = width,
         .height = height,
+        .pos = {
+            .x = x,
+            .y = y
+        }
+    };
+
+    return p;
+}
+
+puck *puck_factory (int radius, int direction_x, int direction_y, int x, int y)
+{
+    puck *p = malloc(sizeof(puck));
+    *p = (puck) {
+        .radius = radius,
+        .direction = {
+            .x = direction_x,
+            .y = direction_y
+        },
         .pos = {
             .x = x,
             .y = y
@@ -79,6 +97,8 @@ void game_init (void)
             paddle_height,
             SCREEN_WIDTH - edge_distance - paddle_width,
             SCREEN_HEIGHT / 2 - paddle_height / 2);
+
+    pong = puck_factory(5, DIRECTION_RIGHT, DIRECTION_UP, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 }
 
 void get_input (void)
@@ -105,6 +125,7 @@ void draw_game (void)
     clear_to_color(buffer, H4CK3R_BL4CK);
     draw_paddle(player1);
     draw_paddle(player2);
+    draw_puck(pong);
 
     if (DEVELOPMENT) {
         draw_sprite(screen, buffer, 0, 0);
@@ -125,10 +146,16 @@ void draw_rectangle(position pos, int height, int width, int color)
     }
 }
 
+void draw_puck(puck *p)
+{
+    draw_rectangle(p->pos, p->radius, p->radius, H4CK3R_GR33N);
+}
+
 void update (void)
 {
     move_paddle(player1, PLAYER_1_UP, PLAYER_1_DOWN);
     move_paddle(player2, PLAYER_2_UP, PLAYER_2_DOWN);
+    move_puck(pong);
 }
 
 void move_paddle (paddle *p, int player_up, int player_down)
@@ -144,6 +171,14 @@ void move_paddle (paddle *p, int player_up, int player_down)
     if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
         p->pos.y++;
     }
+}
+
+void move_puck (puck *p)
+{
+    if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
+        p->direction.y = p->direction.y == DIRECTION_UP ? DIRECTION_DOWN : DIRECTION_UP;
+    }
+    p->pos.y += p->direction.y;
 }
 
 void game_loop (void)
