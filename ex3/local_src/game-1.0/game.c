@@ -33,6 +33,15 @@ void init_allegro (void)
     buffer = create_bitmap(SCREEN_WIDTH, SCREEN_HEIGHT);
     clear_to_color(buffer, H4CK3R_BL4CK);
 }
+
+void allegro_get_input (void)
+{
+    player_buttons[PLAYER_1_UP] = key[KEY_UP];
+    player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
+
+    player_buttons[PLAYER_2_UP] = key[KEY_W];
+    player_buttons[PLAYER_2_DOWN] = key[KEY_S];
+}
 #endif
 
 paddle *paddle_factory (int width, int height, int x, int y)
@@ -117,17 +126,6 @@ void reset_puck (void)
 {
     pong->pos.x = SCREEN_WIDTH / 2;
     pong->pos.y = SCREEN_HEIGHT / 2;
-}
-
-void get_input (void)
-{
-    #if DEVELOPMENT
-        player_buttons[PLAYER_1_UP] = key[KEY_UP];
-        player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
-
-        player_buttons[PLAYER_2_UP] = key[KEY_W];
-        player_buttons[PLAYER_2_DOWN] = key[KEY_S];
-    #endif
 }
 
 void draw_game (void)
@@ -222,7 +220,7 @@ void game_loop (void)
         lag += elapsed;
 
         #if DEVELOPMENT
-        get_input();
+        allegro_get_input();
         #endif
 
         while (lag >= MS_PER_UPDATE)
