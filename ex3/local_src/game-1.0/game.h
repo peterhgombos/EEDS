@@ -26,21 +26,21 @@ typedef struct
     int height;
     position pos;
 }
-puck;
+paddle;
 
 typedef struct
 {
     int radius;
     position pos;
 }
-ball;
+puck;
 
-puck *puck_factory (int width, int height, int x, int y);
+paddle *paddle_factory (int width, int height, int x, int y);
 void game_init (void);
 void game_loop (void);
 void update (void);
-void move_puck (puck *p, int player_up, int player_down);
-void draw_puck(puck *p);
+void move_paddle (paddle *p, int player_up, int player_down);
+void draw_paddle(paddle *p);
 void draw_rectangle(position pos, int height, int width, int color);
 
 #endif

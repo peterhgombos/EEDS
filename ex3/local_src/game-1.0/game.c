@@ -13,9 +13,9 @@
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
 
-puck *player1;
-puck *player2;
-ball pong;
+paddle *player1;
+paddle *player2;
+puck pong;
 
 BITMAP *buffer;
 
@@ -29,10 +29,10 @@ void init_allegro (void)
     clear_to_color(buffer, H4CK3R_BL4CK);
 }
 
-puck *puck_factory (int width, int height, int x, int y)
+paddle *paddle_factory (int width, int height, int x, int y)
 {
-    puck *p = malloc(sizeof(puck));
-    *p = (puck) {
+    paddle *p = malloc(sizeof(paddle));
+    *p = (paddle) {
         .width = width,
         .height = height,
         .pos = {
@@ -64,21 +64,21 @@ void game_init (void)
         H4CK3R_GR33N = makecol(0, 255, 0);
     }
 
-    int puck_height = SCREEN_HEIGHT / 5;
-    int puck_width = 5;
+    int paddle_height = SCREEN_HEIGHT / 5;
+    int paddle_width = 5;
     int edge_distance = 20;
 
-    player1 = puck_factory(
-            puck_width,
-            puck_height,
+    player1 = paddle_factory(
+            paddle_width,
+            paddle_height,
             edge_distance,
-            SCREEN_HEIGHT / 2 - puck_height / 2);
+            SCREEN_HEIGHT / 2 - paddle_height / 2);
 
-    player2 = puck_factory(
-            puck_width,
-            puck_height,
-            SCREEN_WIDTH - edge_distance - puck_width,
-            SCREEN_HEIGHT / 2 - puck_height / 2);
+    player2 = paddle_factory(
+            paddle_width,
+            paddle_height,
+            SCREEN_WIDTH - edge_distance - paddle_width,
+            SCREEN_HEIGHT / 2 - paddle_height / 2);
 }
 
 void get_input (void)
@@ -103,15 +103,15 @@ void get_input (void)
 void draw_game (void)
 {
     clear_to_color(buffer, H4CK3R_BL4CK);
-    draw_puck(player1);
-    draw_puck(player2);
+    draw_paddle(player1);
+    draw_paddle(player2);
 
     if (DEVELOPMENT) {
         draw_sprite(screen, buffer, 0, 0);
     }
 }
 
-void draw_puck(puck *p)
+void draw_paddle(paddle *p)
 {
     // TODO: Only redraw if position changed
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
@@ -127,11 +127,11 @@ void draw_rectangle(position pos, int height, int width, int color)
 
 void update (void)
 {
-    move_puck(player1, PLAYER_1_UP, PLAYER_1_DOWN);
-    move_puck(player2, PLAYER_2_UP, PLAYER_2_DOWN);
+    move_paddle(player1, PLAYER_1_UP, PLAYER_1_DOWN);
+    move_paddle(player2, PLAYER_2_UP, PLAYER_2_DOWN);
 }
 
-void move_puck (puck *p, int player_up, int player_down)
+void move_paddle (paddle *p, int player_up, int player_down)
 {
     if (player_buttons[player_up] == player_buttons[player_down]) {
         return;
@@ -173,7 +173,7 @@ void game_loop (void)
         draw_game();
 
         long sleep = MS_PER_UPDATE - lag;
-        printf("Total lag: %ld. Sleeping for %ld\n", lag, sleep);
+        //printf("Total lag: %ld. Sleeping for %ld\n", lag, sleep);
         sleep > 0 && usleep(sleep * 1000);
     }
 }
