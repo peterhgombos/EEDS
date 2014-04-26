@@ -52,8 +52,6 @@ void move_paddle (paddle *p, int player_up, int player_down);
 void move_puck (puck *p);
 
 int paddle_puck_overlap (paddle *pa, puck *pu);
-void draw_paddle(paddle *p);
-void draw_puck(puck *p);
-void draw_rectangle(position pos, int height, int width, int color);
 
+void draw_game (void);
 #endif
