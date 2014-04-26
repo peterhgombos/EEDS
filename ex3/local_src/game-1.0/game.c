@@ -176,9 +176,27 @@ void move_paddle (paddle *p, int player_up, int player_down)
 void move_puck (puck *p)
 {
     if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
-        p->direction.y = p->direction.y == DIRECTION_UP ? DIRECTION_DOWN : DIRECTION_UP;
+        p->direction.y *= -1;
     }
+
+    if (paddle_puck_overlap(player1, pong) || paddle_puck_overlap(player2, pong)) {
+        p->direction.x *= -1;
+    }
+
     p->pos.y += p->direction.y;
+    p->pos.x += p->direction.x;
+}
+
+int paddle_puck_overlap (paddle *pa, puck *pu)
+{
+    if (pu->pos.x < pa->pos.x + pa->width &&
+            pu->pos.x + pu->radius > pa->pos.x &&
+            pu->pos.y < pa->pos.y + pa->height &&
+            pu->pos.y + pu->radius > pa->pos.y) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 void game_loop (void)
