@@ -2,6 +2,10 @@
 #include "graphics.h"
 #include "defines.h"
 
+#if DEVELOPMENT
+#include <allegro.h>
+#endif
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -16,14 +20,18 @@ extern int H4CK3R_GR33N;
 extern int H4CK3R_BL4CK;
 uint16_t *fbp;
 int fbfd;
-struct fb_copyarea rect;
+struct fb_copyarea fb_rect;
+#if DEVELOPMENT
+extern BITMAP *buffer;
+#endif
 
+#if DEVELOPMENT == 0
 void init_graphics (void)
 {
-        rect.dx = 0;
-        rect.dy = 0;
-        rect.width = 320;
-        rect.height = 240;
+        fb_rect.dx = 0;
+        fb_rect.dy = 0;
+        fb_rect.width = 320;
+        fb_rect.height = 240;
 
         /* open framebuffer device for reading */
         fbfd = open("/dev/fb0", O_RDWR);
@@ -38,12 +46,13 @@ void init_graphics (void)
             perror("Could not map framebuffer to memory");
             exit(2);
         }
-        clear_to_color(H4CK3R_BL4CK);
+        set_solid_color(H4CK3R_BL4CK);
 }
+#endif
 
 void refresh_fb(void)
 {
-    ioctl(fbfd, 0x4680, &rect);
+    ioctl(fbfd, 0x4680, &fb_rect);
 }
 
 void draw_pixel(int x, int y, int color)
@@ -77,9 +86,11 @@ void draw_paddle(paddle *p)
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
 }
 
-void clear_to_color(int color)
+#if DEVELOPMENT == 0
+void set_solid_color(int color)
 {
     for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
         fbp[i] = color;
     }
 }
+#endif

@@ -130,7 +130,7 @@ void draw_game (void)
     #if DEVELOPMENT
         clear_to_color(buffer, H4CK3R_BL4CK);
     #else
-        clear_to_color(H4CK3R_BL4CK);
+        set_solid_color(H4CK3R_BL4CK);
     #endif
     draw_paddle(player1);
     draw_paddle(player2);
