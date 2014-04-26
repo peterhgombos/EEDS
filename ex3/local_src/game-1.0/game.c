@@ -126,7 +126,6 @@ void draw_game (void)
     #else
         clear_to_color(H4CK3R_BL4CK);
     #endif
-    // TODO: clear screen on redraw
     draw_paddle(player1);
     draw_paddle(player2);
     draw_puck(pong);

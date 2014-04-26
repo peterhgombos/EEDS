@@ -20,8 +20,6 @@ struct fb_copyarea rect;
 
 void init_graphics (void)
 {
-        printf("init framebuffer\n");
-
         rect.dx = 0;
         rect.dy = 0;
         rect.width = 320;
@@ -40,10 +38,7 @@ void init_graphics (void)
             perror("Could not map framebuffer to memory");
             exit(2);
         }
-        for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
-            fbp[i] = H4CK3R_BL4CK;
-        }
-
+        clear_to_color(H4CK3R_BL4CK);
 }
 
 void refresh_fb(void)
@@ -60,7 +55,6 @@ void draw_pixel(int x, int y, int color)
 void draw_rectangle(position pos, int height, int width, int color)
 {
     #if DEVELOPMENT
-        //printf("x: %d, y:, h: %d, w: %d\n", pos.x, pos.y, width, height);
         rectfill(buffer, pos.x, pos.y, pos.x + width, pos.y + height, color);
     #else
         for (int i = pos.x; i < pos.x + width; i++){
