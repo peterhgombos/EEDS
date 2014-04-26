@@ -13,6 +13,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define EDGE_DISTANCE 20
+#define PADDLE_WIDTH 5
+#define PADDLE_HEIGHT SCREEN_HEIGHT / 5
+
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
 
@@ -103,29 +107,31 @@ void game_init (void)
     #endif
     srand(time(NULL));
 
-    int paddle_height = SCREEN_HEIGHT / 5;
-    int paddle_width = 5;
-    int edge_distance = 20;
-
     player1 = paddle_factory(
-            paddle_width,
-            paddle_height,
-            edge_distance,
-            SCREEN_HEIGHT / 2 - paddle_height / 2);
+            PADDLE_WIDTH,
+            PADDLE_HEIGHT,
+            EDGE_DISTANCE,
+            SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2);
 
     player2 = paddle_factory(
-            paddle_width,
-            paddle_height,
-            SCREEN_WIDTH - edge_distance - paddle_width,
-            SCREEN_HEIGHT / 2 - paddle_height / 2);
+            PADDLE_WIDTH,
+            PADDLE_HEIGHT,
+            SCREEN_WIDTH - EDGE_DISTANCE - PADDLE_WIDTH,
+            SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2);
 
     pong = puck_factory(5, DIRECTION_RIGHT, DIRECTION_UP, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 }
 
-void reset_puck (void)
+void reset_game_with_winscreen (int with_winscreen)
 {
     pong->pos.x = SCREEN_WIDTH / 2;
     pong->pos.y = SCREEN_HEIGHT / 2;
+
+    player1->pos.x = EDGE_DISTANCE;
+    player1->pos.y = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
+    player2->pos.x = SCREEN_WIDTH - EDGE_DISTANCE - PADDLE_WIDTH;
+    player2->pos.y = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
 }
 
 void draw_game (void)
@@ -175,7 +181,7 @@ void move_puck (puck *p)
     p->pos.x += p->direction.x;
 
     if (p->pos.x <= 0 || p->pos.x > SCREEN_WIDTH) {
-        reset_puck();
+        reset_game_with_winscreen(YES);
     }
 }
 
