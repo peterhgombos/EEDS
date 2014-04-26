@@ -13,7 +13,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define EDGE_DISTANCE 20
+#define MS_PER_UPDATE 20
+#define PX_PER_TICK 2
+
+#define EDGE_DISTANCE 15
 #define PADDLE_WIDTH 5
 #define PADDLE_HEIGHT SCREEN_HEIGHT / 5
 
@@ -161,9 +164,9 @@ void move_paddle (paddle *p, int player_up, int player_down)
     }
 
     if (player_buttons[player_up] && p->pos.y > 0) {
-        p->pos.y--;
+        p->pos.y -= PX_PER_TICK;
     } else if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
-        p->pos.y++;
+        p->pos.y += PX_PER_TICK;
     }
 }
 
@@ -177,8 +180,8 @@ void move_puck (puck *p)
         p->direction.x *= -1;
     }
 
-    p->pos.y += p->direction.y;
-    p->pos.x += p->direction.x;
+    p->pos.y += p->direction.y * PX_PER_TICK;
+    p->pos.x += p->direction.x * PX_PER_TICK;
 
     if (p->pos.x <= 0 || p->pos.x > SCREEN_WIDTH) {
         reset_game_with_winscreen(YES);
@@ -215,7 +218,6 @@ void game_loop (void)
     clock_gettime(CLOCK_REALTIME, &spec);
     long previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
     long lag = 0;
-    long MS_PER_UPDATE = 16;
 
     while(YES)
     {
