@@ -76,13 +76,21 @@ void draw_rectangle(position pos, int height, int width, int color)
 
 void draw_puck(puck *p)
 {
-    // TODO: Only redraw if position changed
+    if (p->pos_prev.x == p->pos.x && p->pos_prev.y == p->pos.y) {
+        return;
+    }
+
+    draw_rectangle(p->pos_prev, p->radius, p->radius, H4CK3R_BL4CK);
     draw_rectangle(p->pos, p->radius, p->radius, H4CK3R_GR33N);
 }
 
 void draw_paddle(paddle *p)
 {
-    // TODO: Only redraw if position changed
+    if (p->pos_prev.x == p->pos.x && p->pos_prev.y == p->pos.y) {
+        return;
+    }
+
+    draw_rectangle(p->pos_prev, p->height, p->width, H4CK3R_BL4CK);
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
 }
 

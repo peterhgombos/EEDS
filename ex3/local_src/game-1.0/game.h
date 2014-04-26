@@ -27,6 +27,7 @@ typedef struct
     int width;
     int height;
     position pos;
+    position pos_prev;
 }
 paddle;
 
@@ -35,6 +36,7 @@ typedef struct
     int radius;
     position direction;
     position pos;
+    position pos_prev;
 }
 puck;
 
@@ -48,6 +50,7 @@ void update (void);
 void move_paddle (paddle *p, int player_up, int player_down);
 void move_puck (puck *p);
 void reset_puck (void);
+void cp_pos_to_prev (void);
 
 int paddle_puck_overlap (paddle *pa, puck *pu);
 

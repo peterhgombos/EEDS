@@ -22,7 +22,6 @@ paddle *player1;
 paddle *player2;
 puck *pong;
 
-
 #if DEVELOPMENT
 BITMAP *buffer;
 void init_allegro (void)
@@ -45,6 +44,10 @@ paddle *paddle_factory (int width, int height, int x, int y)
         .pos = {
             .x = x,
             .y = y
+        },
+        .pos_prev = {
+            .x = 0,
+            .y = 0
         }
     };
 
@@ -63,7 +66,12 @@ puck *puck_factory (int radius, int direction_x, int direction_y, int x, int y)
         .pos = {
             .x = x,
             .y = y
+        },
+        .pos_prev = {
+            .x = 0,
+            .y = 0
         }
+
     };
 
     return p;
@@ -119,21 +127,11 @@ void get_input (void)
 
         player_buttons[PLAYER_2_UP] = key[KEY_W];
         player_buttons[PLAYER_2_DOWN] = key[KEY_S];
-
-    #else
-        // Parse cached values from gamepad drivers
     #endif
-    
 }
 
 void draw_game (void)
 {
-    #if DEVELOPMENT
-        clear_to_color(buffer, H4CK3R_BL4CK);
-    #else
-        //TODO not add black all the time.
-        set_solid_color(H4CK3R_BL4CK);
-    #endif
     draw_paddle(player1);
     draw_paddle(player2);
     draw_puck(pong);
@@ -160,9 +158,7 @@ void move_paddle (paddle *p, int player_up, int player_down)
 
     if (player_buttons[player_up] && p->pos.y > 0) {
         p->pos.y--;
-    }
-
-    if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
+    } else if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
         p->pos.y++;
     }
 }
@@ -171,7 +167,7 @@ void move_puck (puck *p)
 {
     if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
         p->direction.y *= -1;
-    }
+    } 
 
     if (paddle_puck_overlap(player1, pong) || paddle_puck_overlap(player2, pong)) {
         p->direction.x *= -1;
@@ -197,6 +193,18 @@ int paddle_puck_overlap (paddle *pa, puck *pu)
     }
 }
 
+void cp_pos_to_prev (void)
+{
+    player1->pos_prev.x = player1->pos.x;
+    player1->pos_prev.y = player1->pos.y;
+
+    player2->pos_prev.x = player2->pos.x;
+    player2->pos_prev.y = player2->pos.y;
+
+    pong->pos_prev.x = pong->pos.x;
+    pong->pos_prev.y = pong->pos.y;
+}
+
 void game_loop (void)
 {
     struct timespec spec;
@@ -205,15 +213,17 @@ void game_loop (void)
     long lag = 0;
     long MS_PER_UPDATE = 16;
 
-    while(YES) {
-
+    while(YES)
+    {
         clock_gettime(CLOCK_REALTIME, &spec);
         long current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
         long elapsed = current - previous;
         previous = current;
         lag += elapsed;
 
+        #if DEVELOPMENT
         get_input();
+        #endif
 
         while (lag >= MS_PER_UPDATE)
         {
@@ -222,6 +232,7 @@ void game_loop (void)
         }
 
         draw_game();
+        cp_pos_to_prev();
 
         long sleep = MS_PER_UPDATE - lag;
         sleep > 0 && usleep(sleep * 1000);
