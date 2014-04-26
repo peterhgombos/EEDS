@@ -87,10 +87,14 @@ void get_input (void)
         player_buttons[PLAYER_1_UP] = key[KEY_UP];
         player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
 
-        printf("Input?");
+        player_buttons[PLAYER_2_UP] = key[KEY_W];
+        player_buttons[PLAYER_2_DOWN] = key[KEY_S];
+
+        /*printf("Input?\n");
         for (int i=0; i<8; i++) {
             printf("%d", player_buttons[i]);
         }
+        printf("\n");*/
     } else {
         // Parse cached values from gamepad drivers
     }
