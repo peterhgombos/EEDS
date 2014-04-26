@@ -1,47 +1,80 @@
+#include "game.h"
 #include "graphics.h"
 #include "defines.h"
 
 #include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <linux/fb.h>
 #include <sys/ioctl.h>
-#include <sys/mmap.h>
+#include <sys/mman.h>
 
 
-char *fbp;
+uint16_t *fbp;
+int fbfd;
+struct fb_copyarea rect;
 
 void init_graphics (void)
 {
-    if (!DEVELOPMENT) {
-        int fbfd = 0;
-        long int screensize = 153600;
+        printf("init framebuffer\n");
+
+        rect.dx = 0;
+        rect.dy = 0;
+        rect.width = 320;
+        rect.height = 240;
 
         /* open framebuffer device for reading */
-        fbfd = open("/dev/fb0", O_RDRW);
+        fbfd = open("/dev/fb0", O_RDWR);
+        if (fbfd == -1){ 
+            perror("Could not open framebuffer");
+            exit(1);
+        }
 
         /* map screen to memory region */
-        fbp = (char *) mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, 0);
-    }
+        fbp = (uint16_t *) mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd,0);
+        if ((int) fbp == -1){
+            perror("Could not map framebuffer to memory");
+            exit(2);
+        }
+        for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
+            fbp[i] = HACKERBLACK;
+        }
 
+}
+
+void refresh_fb(void)
+{
+    ioctl(fbfd, 0x4680, &rect);
 }
 
 void draw_pixel(int x, int y, int color)
 {
-    int location = x * 2 + y * 319;
-    *(fbp + location) = color;
+    int location = x  + y * 320;
+    fbp[location] = color;
 }
 
 void draw_rectangle(position pos, int height, int width, int color)
 {
-    if (DEVELOPMENT) {
+    #if DEVELOPMENT
         //printf("x: %d, y:, h: %d, w: %d\n", pos.x, pos.y, width, height);
         rectfill(buffer, pos.x, pos.y, pos.x + width, pos.y + height, color);
-    }
+    #else
+        for (int i = pos.x; i < pos.x + width; i++){
+            for (int j = pos.y; j < pos.y + height + 1; j++){
+                draw_pixel(i, j, color);
+            }
+        }
+    #endif
 }
 
 void draw_puck(puck p)
 {
     // TODO: Only redraw if position changed
-    if (DEVELOPMENT) {
+    #if DEVELOPMENT
         draw_rectangle(p.pos, p.height, p.width, H4CK3R_GR33N);
-    }
+    #else
+        draw_rectangle(p.pos, p.height, p.width, HACKERGREEN);
+    #endif
 }

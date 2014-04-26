@@ -78,6 +78,7 @@ void game_init (void)
     #else
         H4CK3R_BL4CK = HACKERBLACK;
         H4CK3R_GR33N = HACKERGREEn;
+        init_graphics();
         /*
         if (gamepad_init () == EXIT_FAILURE) {
             exit (EXIT_FAILURE);
@@ -123,12 +124,18 @@ void get_input (void)
 void draw_game (void)
 {
     #if DEVELOPMENT
-    clear_to_color(buffer, H4CK3R_BL4CK);
+        clear_to_color(buffer, H4CK3R_BL4CK);
     #endif
     // TODO: clear screen on redraw
     draw_paddle(player1);
     draw_paddle(player2);
     draw_puck(pong);
+
+    #if DEVELOPMENT
+        draw_sprite(screen, buffer, 0, 0);
+    #else
+        refresh_fb();
+    #endif
 }
 
 void draw_paddle(paddle *p)
@@ -136,7 +143,6 @@ void draw_paddle(paddle *p)
     // TODO: Only redraw if position changed
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
 }
-
 
 
 void draw_puck(puck *p)
@@ -229,4 +235,6 @@ int main(int argc, char *argv[])
     game_loop();
     exit (EXIT_SUCCESS);
 }
+#if DEVELOPMENT
 END_OF_MAIN();
+#endif
