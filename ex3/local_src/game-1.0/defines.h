@@ -7,4 +7,7 @@
 #define SCREEN_WIDTH 320
 #define DEVELOPMENT 0
 
+#define HACKERGREEN 2016
+#define HACKERBLACK 65535
+
 #endif

@@ -1,10 +1,10 @@
-CC=colorgcc
+CC=gcc
 
 C_FILES := $(wildcard *.c)
 OBJ_FILES := $(notdir $(C_FILES:.c=.o))
 
 CFLAGS += -O2 -g -Wall -Wsign-compare -Wfloat-equal -Wformat-security -std=gnu99
-LDFLAGS += -lalleg -lm -lrt
+LDFLAGS += -lm -lrt
 
 game: $(OBJ_FILES)
 	$(CC) -o $@ $^ $(LDFLAGS)

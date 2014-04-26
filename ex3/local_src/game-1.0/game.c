@@ -1,24 +1,30 @@
 #include "game.h"
 #include "gamepad_buttons.h"
 #include "defines.h"
+#include "graphics.h"
 
+#if DEVELOPMENT
 #include <allegro.h>
+#endif
 
-#include <sys/time.h>
+#include <time.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#if DEVELOPMENT
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
+#endif
 
 paddle *player1;
 paddle *player2;
 puck *pong;
 
-BITMAP *buffer;
 
+#if DEVELOPMENT
+BITMAP *buffer;
 void init_allegro (void)
 {
     allegro_init();
@@ -28,6 +34,7 @@ void init_allegro (void)
     buffer = create_bitmap(SCREEN_WIDTH, SCREEN_HEIGHT);
     clear_to_color(buffer, H4CK3R_BL4CK);
 }
+#endif
 
 paddle *paddle_factory (int width, int height, int x, int y)
 {
@@ -64,23 +71,20 @@ puck *puck_factory (int radius, int direction_x, int direction_y, int x, int y)
 
 void game_init (void)
 {
-    if (DEVELOPMENT)
-    {
+    #if DEVELOPMENT
         init_allegro();
-    }
-    else
-    {
+        H4CK3R_BL4CK = makecol(0, 0, 0);
+        H4CK3R_GR33N = makecol(0, 255, 0);
+    #else
+        H4CK3R_BL4CK = HACKERBLACK;
+        H4CK3R_GR33N = HACKERGREEn;
+        /*
         if (gamepad_init () == EXIT_FAILURE) {
             exit (EXIT_FAILURE);
         }
-    }
-
+        */
+    #endif
     srand(time(NULL));
-
-    if (DEVELOPMENT) {
-        H4CK3R_BL4CK = makecol(0, 0, 0);
-        H4CK3R_GR33N = makecol(0, 255, 0);
-    }
 
     int paddle_height = SCREEN_HEIGHT / 5;
     int paddle_width = 5;
@@ -103,33 +107,28 @@ void game_init (void)
 
 void get_input (void)
 {
-    if (DEVELOPMENT) {
+    #if DEVELOPMENT
         player_buttons[PLAYER_1_UP] = key[KEY_UP];
         player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
 
         player_buttons[PLAYER_2_UP] = key[KEY_W];
         player_buttons[PLAYER_2_DOWN] = key[KEY_S];
 
-        /*printf("Input?\n");
-        for (int i=0; i<8; i++) {
-            printf("%d", player_buttons[i]);
-        }
-        printf("\n");*/
-    } else {
+    #else
         // Parse cached values from gamepad drivers
-    }
+    #endif
+    
 }
 
 void draw_game (void)
 {
+    #if DEVELOPMENT
     clear_to_color(buffer, H4CK3R_BL4CK);
+    #endif
+    // TODO: clear screen on redraw
     draw_paddle(player1);
     draw_paddle(player2);
     draw_puck(pong);
-
-    if (DEVELOPMENT) {
-        draw_sprite(screen, buffer, 0, 0);
-    }
 }
 
 void draw_paddle(paddle *p)
@@ -138,13 +137,7 @@ void draw_paddle(paddle *p)
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
 }
 
-void draw_rectangle(position pos, int height, int width, int color)
-{
-    if (DEVELOPMENT) {
-        //printf("x: %d, y:, h: %d, w: %d\n", pos.x, pos.y, width, height);
-        rectfill(buffer, pos.x, pos.y, pos.x + width, pos.y + height, color);
-    }
-}
+
 
 void draw_puck(puck *p)
 {
@@ -226,7 +219,6 @@ void game_loop (void)
         draw_game();
 
         long sleep = MS_PER_UPDATE - lag;
-        //printf("Total lag: %ld. Sleeping for %ld\n", lag, sleep);
         sleep > 0 && usleep(sleep * 1000);
     }
 }
