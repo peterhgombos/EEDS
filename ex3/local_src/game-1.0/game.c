@@ -13,10 +13,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#if DEVELOPMENT
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
-#endif
 
 paddle *player1;
 paddle *player2;
@@ -77,7 +75,7 @@ void game_init (void)
         H4CK3R_GR33N = makecol(0, 255, 0);
     #else
         H4CK3R_BL4CK = HACKERBLACK;
-        H4CK3R_GR33N = HACKERGREEn;
+        H4CK3R_GR33N = HACKERGREEN;
         init_graphics();
         /*
         if (gamepad_init () == EXIT_FAILURE) {
@@ -125,6 +123,8 @@ void draw_game (void)
 {
     #if DEVELOPMENT
         clear_to_color(buffer, H4CK3R_BL4CK);
+    #else
+        clear_to_color(H4CK3R_BL4CK);
     #endif
     // TODO: clear screen on redraw
     draw_paddle(player1);
