@@ -1,4 +1,6 @@
-CC=gcc
+
+C_FILES := $(wildcard *.c)
+OBJ_FILES := $(notdir $(C_FILES:.c=.o))
 
 C_FILES := $(wildcard *.c)
 OBJ_FILES := $(notdir $(C_FILES:.c=.o))
