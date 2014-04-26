@@ -16,6 +16,8 @@
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
 
+int player_buttons[8];
+
 paddle *player1;
 paddle *player2;
 puck *pong;
@@ -77,11 +79,10 @@ void game_init (void)
         H4CK3R_BL4CK = HACKERBLACK;
         H4CK3R_GR33N = HACKERGREEN;
         init_graphics();
-        /*
+
         if (gamepad_init () == EXIT_FAILURE) {
             exit (EXIT_FAILURE);
         }
-        */
     #endif
     srand(time(NULL));
 
@@ -130,6 +131,7 @@ void draw_game (void)
     #if DEVELOPMENT
         clear_to_color(buffer, H4CK3R_BL4CK);
     #else
+        //TODO not add black all the time.
         set_solid_color(H4CK3R_BL4CK);
     #endif
     draw_paddle(player1);

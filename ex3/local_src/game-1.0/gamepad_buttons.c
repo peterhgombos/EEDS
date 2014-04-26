@@ -1,14 +1,23 @@
 #include "gamepad_buttons.h"
+#include "game.h"
 
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
 
+
+extern int player_buttons[8];
+
 void sig_handler (int signo)
 {
     (void) signo;
-    //cached_gamepad_buttons = fgetc(gamepad);
+    int input = fgetc(gamepad);
+    player_buttons[PLAYER_1_UP] = input & (1 << 1);
+    player_buttons[PLAYER_1_DOWN] = input & (1 << 3);
+    player_buttons[PLAYER_2_UP] = input & (1 << 5);
+    player_buttons[PLAYER_2_DOWN] = input & (1 << 7);
+
 }
 
 int gamepad_init (void)

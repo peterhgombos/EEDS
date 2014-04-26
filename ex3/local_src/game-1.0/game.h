@@ -10,9 +10,6 @@
 #define PLAYER_2_LEFT 6
 #define PLAYER_2_RIGHT 7
 
-static int player_buttons[8];
-static int cached_gamepad_buttons = 0;
-
 #define DIRECTION_LEFT -1
 #define DIRECTION_RIGHT 1
 #define DIRECTION_UP -1
