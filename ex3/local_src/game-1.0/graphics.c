@@ -5,7 +5,6 @@
 #if DEVELOPMENT
 #include <allegro.h>
 #endif
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -92,6 +91,134 @@ void draw_paddle(paddle *p)
 
     draw_rectangle(p->pos_prev, p->height, p->width, H4CK3R_BL4CK);
     draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
+}
+
+void draw_number (int offset_x, int offset_y, int number)
+{
+    int CORNER_WIDTH = 2;
+    int SEGMENT_HEIGHT = 12;
+    int SEGMENT_WIDTH = 10;
+
+    position origo = {offset_x, offset_y};
+    position top = {offset_x + CORNER_WIDTH, offset_y};
+    position middle = {offset_x + CORNER_WIDTH, offset_y + SEGMENT_HEIGHT + CORNER_WIDTH * 1};
+    position bottom = {offset_x + CORNER_WIDTH, offset_y + SEGMENT_HEIGHT * 2 + CORNER_WIDTH * 2};
+
+    position top_left = {offset_x, offset_y + CORNER_WIDTH};
+    position bottom_left = {offset_x, offset_y + SEGMENT_HEIGHT + CORNER_WIDTH * 2};
+
+    position top_right = {offset_x + SEGMENT_WIDTH + CORNER_WIDTH, offset_y + CORNER_WIDTH};
+    position bottom_right = {offset_x + SEGMENT_WIDTH + CORNER_WIDTH, offset_y + SEGMENT_HEIGHT + CORNER_WIDTH * 2};
+
+    draw_rectangle(origo,
+            SEGMENT_HEIGHT * 2 + CORNER_WIDTH * 3,
+            SEGMENT_WIDTH + CORNER_WIDTH * 2,
+            H4CK3R_BL4CK);
+
+
+    switch (number)
+    {
+        case 10:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 9:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 8:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 7:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 6:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 5:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 4:
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 3:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 2:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(middle, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(bottom_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 1:
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+
+        case 0:
+            draw_rectangle(top, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom, CORNER_WIDTH, SEGMENT_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_left, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+
+            draw_rectangle(top_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            draw_rectangle(bottom_right, SEGMENT_HEIGHT, CORNER_WIDTH, H4CK3R_GR33N);
+            break;
+    }
 }
 
 #if DEVELOPMENT == 0

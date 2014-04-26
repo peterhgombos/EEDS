@@ -13,10 +13,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define MAX_SCORE 9
+
 #define MS_PER_UPDATE 20
 #define PX_PER_TICK 2
 
-#define EDGE_DISTANCE 15
+#define EDGE_DISTANCE 20
 #define PADDLE_WIDTH 5
 #define PADDLE_HEIGHT SCREEN_HEIGHT / 5
 
@@ -24,6 +26,9 @@ int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
 
 int player_buttons[8];
+
+int player1_score;
+int player2_score;
 
 paddle *player1;
 paddle *player2;
@@ -63,7 +68,7 @@ paddle *paddle_factory (int width, int height, int x, int y)
         },
         .pos_prev = {
             .x = 0,
-            .y = 0
+            .y = SCREEN_HEIGHT / 2
         }
     };
 
@@ -123,10 +128,31 @@ void game_init (void)
             SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2);
 
     pong = puck_factory(5, DIRECTION_RIGHT, DIRECTION_UP, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+
+    player1_score = 0;
+    player2_score = 0;
 }
 
-void reset_game_with_winscreen (int with_winscreen)
+void draw_scores (void)
 {
+    draw_number (3, 3, player1_score);
+    draw_number (SCREEN_WIDTH - 17, 3, player2_score);
+
+    #if DEVELOPMENT
+    draw_sprite (screen, buffer, 0, 0);
+    #else
+    refresh_fb ();
+    #endif
+}
+
+void player_scored (void)
+{
+    if (pong->pos.x > 10) {
+        player1_score++;
+    } else {
+        player2_score++;
+    }
+
     pong->pos.x = SCREEN_WIDTH / 2;
     pong->pos.y = SCREEN_HEIGHT / 2;
 
@@ -135,6 +161,12 @@ void reset_game_with_winscreen (int with_winscreen)
 
     player2->pos.x = SCREEN_WIDTH - EDGE_DISTANCE - PADDLE_WIDTH;
     player2->pos.y = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
+    if (player2_score > MAX_SCORE || player1_score > MAX_SCORE) {
+        player1_score = player2_score = 0;
+    }
+
+    draw_scores ();
 }
 
 void draw_game (void)
@@ -176,15 +208,21 @@ void move_puck (puck *p)
         p->direction.y *= -1;
     } 
 
-    if (paddle_puck_overlap(player1, pong) || paddle_puck_overlap(player2, pong)) {
-        p->direction.x *= -1;
+    if (paddle_puck_overlap(player1, pong)) {
+        if (p->direction.x < 0) {
+            p->direction.x *= -1;
+        }
+    } else if (paddle_puck_overlap(player2, pong)) {
+        if (p->direction.x > 0) {
+            p->direction.x *= -1;
+        }
     }
 
     p->pos.y += p->direction.y * PX_PER_TICK;
     p->pos.x += p->direction.x * PX_PER_TICK;
 
     if (p->pos.x <= 0 || p->pos.x > SCREEN_WIDTH) {
-        reset_game_with_winscreen(YES);
+        player_scored ();
     }
 }
 
@@ -219,7 +257,8 @@ void game_loop (void)
     long previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
     long lag = 0;
 
-    while(YES)
+    draw_scores ();
+    while (YES)
     {
         clock_gettime(CLOCK_REALTIME, &spec);
         long current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;

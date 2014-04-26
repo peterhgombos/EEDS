@@ -49,10 +49,11 @@ void update (void);
 
 void move_paddle (paddle *p, int player_up, int player_down);
 void move_puck (puck *p);
-void reset_game_with_winscreen (int with_winscreen);
+void player_scored (void);
 void cp_pos_to_prev (void);
 
 int paddle_puck_overlap (paddle *pa, puck *pu);
 
 void draw_game (void);
+void draw_scores (void);
 #endif

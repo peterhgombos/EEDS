@@ -10,6 +10,7 @@ void draw_pixel(int x, int y, int color);
 void draw_puck(puck *p);
 void draw_paddle(paddle *p);
 void draw_rectangle(position pos, int height, int width, int color);
+void draw_number (int offset_x, int offset_y, int number);
 
 #if DEVELOPMENT == 0
 void init_graphics (void);
