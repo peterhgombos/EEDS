@@ -127,7 +127,23 @@ void draw_rectangle(position pos, int height, int width, int color)
 
 void update (void)
 {
-    printf("I am update :D\n");
+    move_puck(player1, PLAYER_1_UP, PLAYER_1_DOWN);
+    move_puck(player2, PLAYER_2_UP, PLAYER_2_DOWN);
+}
+
+void move_puck (puck *p, int player_up, int player_down)
+{
+    if (player_buttons[player_up] == player_buttons[player_down]) {
+        return;
+    }
+
+    if (player_buttons[player_up] && p->pos.y > 0) {
+        p->pos.y--;
+    }
+
+    if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
+        p->pos.y++;
+    }
 }
 
 void game_loop (void)
