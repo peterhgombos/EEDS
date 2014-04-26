@@ -35,11 +35,12 @@ typedef struct
 }
 ball;
 
-puck puck_factory (int width, int height, int x, int y);
+puck *puck_factory (int width, int height, int x, int y);
 void game_init (void);
 void game_loop (void);
 void update (void);
-void draw_puck(puck p);
+void move_puck (puck *p, int player_up, int player_down);
+void draw_puck(puck *p);
 void draw_rectangle(position pos, int height, int width, int color);
 
 #endif

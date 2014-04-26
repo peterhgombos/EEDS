@@ -13,8 +13,8 @@
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
 
-puck player1;
-puck player2;
+puck *player1;
+puck *player2;
 ball pong;
 
 BITMAP *buffer;
@@ -29,9 +29,10 @@ void init_allegro (void)
     clear_to_color(buffer, H4CK3R_BL4CK);
 }
 
-puck puck_factory (int width, int height, int x, int y)
+puck *puck_factory (int width, int height, int x, int y)
 {
-    return (puck) {
+    puck *p = malloc(sizeof(puck));
+    *p = (puck) {
         .width = width,
         .height = height,
         .pos = {
@@ -39,6 +40,8 @@ puck puck_factory (int width, int height, int x, int y)
             .y = y
         }
     };
+
+    return p;
 }
 
 void game_init (void)
@@ -103,10 +106,10 @@ void draw_game (void)
     }
 }
 
-void draw_puck(puck p)
+void draw_puck(puck *p)
 {
     // TODO: Only redraw if position changed
-    draw_rectangle(p.pos, p.height, p.width, H4CK3R_GR33N);
+    draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
 }
 
 void draw_rectangle(position pos, int height, int width, int color)
