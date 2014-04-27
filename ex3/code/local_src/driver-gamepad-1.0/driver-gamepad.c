@@ -23,6 +23,9 @@
 
 #define DEVICE_NAME "gamepad"
 
+#define IRQ_EVEN 0
+#define IRQ_ODD  1
+
 static void __exit dev_exit(void);
 static int __init dev_init(void);
 static int dev_fasync (int fd, struct file *filp, int mode);
@@ -105,6 +108,22 @@ static int dev_fasync(int fd, struct file *filp, int mode) {
 	return fasync_helper (fd, filp, mode, &async_queue);
 }
 
+/* Set up gamepad hardware */
+static void hardware_init (void)
+{
+	/* Disable the interrupt before setup */
+	interrupt_disable ();
+
+	/* Set external interrupts on PORT C */
+	iowrite32 (0x22222222, GPIO_EXTIPSELL);
+	iowrite32 (0x000000FF, GPIO_EXTIFALL);
+	iowrite32 (0x000000FF, GPIO_EXTIRISE);
+
+	/* Configure buttons on PORT C */
+	iowrite32 (0x33333333, GPIO_PC_MODEL);
+	iowrite32 (0x000000FF, GPIO_PC_DOUT);
+}
+
 /* Opening the char device enables the gamepad button interrupt */
 static int dev_open (struct inode *inode, struct file *filp)
 {
@@ -123,36 +142,24 @@ static int dev_open (struct inode *inode, struct file *filp)
 /* Gamepad and char device init */
 static int dev_probe (struct platform_device *pdev)
 {
-	int even_irq, odd_irq;
+	int irq;
 	int size;
 	struct resource *res;
 
-	dev_notice (&pdev->dev, "dev_probe()\n");
-
-	/* Disable the interrupt before setup */
-	interrupt_disable ();
-
-	/* Set external interrupts on PORT C */
-	iowrite32 (0x22222222, GPIO_EXTIPSELL);
-	iowrite32 (0x000000FF, GPIO_EXTIFALL);
-	iowrite32 (0x000000FF, GPIO_EXTIRISE);
-
-	/* Configure buttons on PORT C */
-	iowrite32 (0x33333333, GPIO_PC_MODEL);
-	iowrite32 (0x000000FF, GPIO_PC_DOUT);
+	hardware_init ();
 
 	/* Register interrupt handler for odd and even GPIO pins */
-	even_irq = platform_get_irq (pdev, 0);
-	if (request_irq (even_irq, (irq_handler_t)(dev_irq), IRQF_DISABLED,
+	irq = platform_get_irq (pdev, IRQ_EVEN);
+	if (request_irq (irq, (irq_handler_t) (dev_irq), IRQF_DISABLED,
 				DEVICE_NAME, NULL)) {
-		dev_err(&pdev->dev, "gamepad: cannot register IRQ %d\n", even_irq);
+		dev_err(&pdev->dev, "gamepad: cannot register IRQ %d\n", irq);
 		goto err_even;
 	}
 
-	odd_irq = platform_get_irq (pdev, 1);
-	if (request_irq (odd_irq, (irq_handler_t)(dev_irq), IRQF_DISABLED,
+	irq = platform_get_irq (pdev, IRQ_ODD);
+	if (request_irq (irq, (irq_handler_t) (dev_irq), IRQF_DISABLED,
 				DEVICE_NAME, NULL)) {
-		dev_err(&pdev->dev, "gamepad: cannot register IRQ %d\n", odd_irq);
+		dev_err(&pdev->dev, "gamepad: cannot register IRQ %d\n", irq);
 		goto err_odd;
 	}
 
@@ -207,12 +214,10 @@ err_chrdev:
 	release_mem_region (res->start, size);
 
 err_res:
-	odd_irq = platform_get_irq (pdev, 1);
-	free_irq (odd_irq, NULL);
+	free_irq (platform_get_irq (pdev, IRQ_EVEN), NULL);
 
 err_odd:
-	even_irq = platform_get_irq (pdev, 1);
-	free_irq (even_irq, NULL);
+	free_irq (platform_get_irq (pdev, IRQ_ODD), NULL);
 
 err_even:
 	return -1;
@@ -249,8 +254,7 @@ static int dev_release (struct inode *inode, struct file *filp)
 /* Gamepad and char device teardown */
 static int dev_remove (struct platform_device *pdev)
 {
-	int even_irq;
-	int odd_irq;
+	int irq;
 	int size;
 	struct resource *res;
 
@@ -266,11 +270,11 @@ static int dev_remove (struct platform_device *pdev)
 	unregister_chrdev_region (0, 1);
 
 	/* Free IRQs */
-	even_irq = platform_get_irq (pdev, 0);
-	free_irq(even_irq, NULL);
+	irq = platform_get_irq (pdev, IRQ_EVEN);
+	free_irq(irq, NULL);
 
-	odd_irq = platform_get_irq (pdev, 1);
-	free_irq(odd_irq, NULL);
+	irq = platform_get_irq (pdev, IRQ_ODD);
+	free_irq(irq, NULL);
 
 	/* Release GPIO memory */
 	res = platform_get_resource (pdev, IORESOURCE_MEM, 0);
