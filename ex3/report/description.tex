@@ -10,6 +10,18 @@
 
 \subsubsection{Input handling}
 
+Whenever the gamepad changes state, i.e. a button is released or pressed,
+a signal is received which in turn invokes an input interrupt handler.
+
+The handler polls the gamepad driver, receiving a byte representing currently
+pressed buttons. Input is then parsed to fit the games internal representation
+of active keys. This abstraction layer between input and internal state is used
+to allow for multiple methods of input, practical during development when a
+computer keyboard is used.
+
+Having an allways up to date version of button state cached frees the program
+from having to poll the driver for each iteration of the main game loop.
+
 \subsubsection{Graphics}
 
 \subsubsection{Energy efficiency optimization}
