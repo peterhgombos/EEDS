@@ -26,6 +26,7 @@
 
 int H4CK3R_BL4CK;
 int H4CK3R_GR33N;
+static int SCREEN_SAFE_WIDTH = EDGE_DISTANCE + PADDLE_WIDTH;
 
 int player_buttons[8];
 
@@ -158,17 +159,6 @@ void draw_scores (void)
     #else
     graphics_update ();
     #endif
-
-    /*int direction_x = pong->direction.x;
-    int direction_y = pong->direction.y;
-
-    pong->direction.x = 0;
-    pong->direction.y = 0;
-
-    usleep(1000000);
-
-    pong->direction.x = direction_x;
-    pong->direction.y = direction_y;*/
 }
 
 void player_scored (void)
@@ -232,16 +222,16 @@ void move_puck (puck *p)
 {
     if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
         p->direction.y *= -1;
-    } 
+    }
 
-    if (paddle_puck_overlap(player1, pong)) {
-        if (p->direction.x < 0) {
-            p->direction.x *= -1;
-        }
-    } else if (paddle_puck_overlap(player2, pong)) {
-        if (p->direction.x > 0) {
-            p->direction.x *= -1;
-        }
+    if (player1->pos.x <= SCREEN_SAFE_WIDTH &&
+            paddle_puck_overlap(player1, pong) &&
+            p->direction.x < 0) {
+        p->direction.x *= -1;
+    } else if (player2->pos.x >= SCREEN_WIDTH - SCREEN_SAFE_WIDTH &&
+            paddle_puck_overlap(player2, pong) &&
+            p->direction.x > 0) {
+        p->direction.x *= -1;
     }
 
     p->pos.y += p->direction.y * PX_PER_TICK;
@@ -266,14 +256,9 @@ int paddle_puck_overlap (paddle *pa, puck *pu)
 
 void cp_pos_to_prev (void)
 {
-    player1->pos_prev.x = player1->pos.x;
-    player1->pos_prev.y = player1->pos.y;
-
-    player2->pos_prev.x = player2->pos.x;
-    player2->pos_prev.y = player2->pos.y;
-
-    pong->pos_prev.x = pong->pos.x;
-    pong->pos_prev.y = pong->pos.y;
+    player1->pos_prev = player1->pos;
+    player2->pos_prev = player2->pos;
+    pong->pos_prev = pong->pos;
 }
 
 void game_loop (void)
