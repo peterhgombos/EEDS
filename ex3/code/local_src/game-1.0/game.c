@@ -18,7 +18,7 @@
 #define MAX_SCORE 9
 
 #define MS_PER_UPDATE 42
-#define PX_PER_TICK 3
+#define PX_PER_TICK 4
 
 #define EDGE_DISTANCE 20
 #define PADDLE_WIDTH 5
