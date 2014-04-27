@@ -39,6 +39,23 @@ paddle *player1;
 paddle *player2;
 puck *pong;
 
+struct timespec spec;
+long before_stamp;
+long after_stamp;
+
+void start_stamp (void)
+{
+    clock_gettime(CLOCK_REALTIME, &spec);
+    before_stamp = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+}
+
+void end_stamp (void)
+{
+    clock_gettime(CLOCK_REALTIME, &spec);
+    after_stamp = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+    printf("Time spent in section: %lu\n", after_stamp - before_stamp);
+}
+
 #if DEVELOPMENT
 BITMAP *buffer;
 void init_allegro (void)
