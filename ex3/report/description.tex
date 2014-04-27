@@ -32,37 +32,30 @@ performance.
 If the game loop finishes ahead of time (using less than MS\_PER\_UPDATE ms),
 sleep mode is entered for the remainder (time\_to\_next\_update).
 
-With an internal update frequency target of 24 fps,
-ENTER EXAMPLE WITH MICROCONTROLLER DATA HERE.
-This allows the program to spend most of its time sleeping.
+With an internal update frequency target of 24 fps, ENTER EXAMPLE WITH
+MICROCONTROLLER DATA HERE.  This allows the program to spend most of its time
+sleeping.
 
-\begin{lstlisting}[caption={Main game loop}, label={lst:main-game-loop}]
-/* Some code ommited for brevity */
-void game_loop (void)
-{
-    lag = 0;
-    previous_time = get_time ();
+\begin{algorithm}
+  \caption{Game main loop}
+  \begin{algorithmic}
+    \State $lag \gets 0$
+    \State $time\_previous \gets \Call{get\_time}{\null}$
 
-    while (running)
-    {
-        current_time = get_time ();
-        elapsed = current_time - previous_time;
-        lag += elapsed;
+    \Loop
+      \State $time\_current \gets \Call{get\_time}{\null}$
+      \State $time\_elapsed \gets time\_current - time\_previous$
+      \State $lag \gets lag + time\_elapsed$
 
-        while (lag >= MS_PER_UPDATE)
-        {
-            update ();
-            lag -= MS_PER_UPDATE;
-        }
-
-        draw_game ();
-
-        time_to_next_update = MS_PER_UPDATE - lag;
-        sleep (time_to_next_update);
-    }
-}
-\end{lstlisting}
-
+      \While{$lag \geq MS\_PER\_UPDATE$}
+        \State $\Call{update}{\null}$
+        \State $lag \gets lag - MS\_PER\_UPDATE$
+      \EndWhile
+      \State $\Call{draw\_game}{\null}$
+      \State $\Call{sleep}{MS\_PER\_UPDATE - lag}$
+    \EndLoop
+  \end{algorithmic}
+\end{algorithm}
 
 \subsubsection{Input handling}
 Whenever the gamepad changes state, i.e. a button is released or pressed,
