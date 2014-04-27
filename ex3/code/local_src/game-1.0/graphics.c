@@ -46,6 +46,7 @@ void graphics_init (void)
         perror("Could not map framebuffer to memory");
         exit(2);
     }
+
     set_solid_color(H4CK3R_BL4CK);
 }
 
@@ -56,12 +57,16 @@ void graphics_deinit (void)
 
     munmap (fbp, SCREENSIZE_BYTES);
 }
-#endif
 
-void graphics_update (void)
+void set_solid_color(int color)
 {
+    for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
+        fbp[i] = color;
+    }
+
     ioctl(fbfd, 0x4680, &fb_rect);
 }
+#endif
 
 void draw_pixel (int x, int y, int color)
 {
@@ -79,6 +84,15 @@ void draw_rectangle (position pos, int height, int width, int color)
                 draw_pixel(i, j, color);
             }
         }
+
+        struct fb_copyarea redraw_rect = {
+          .dx = pos.x,
+          .dy = pos.y,
+          .width = width,
+          .height = height
+        };
+
+        ioctl(fbfd, 0x4680, &redraw_rect);
     #endif
 }
 
@@ -92,14 +106,47 @@ void draw_puck(puck *p)
     draw_rectangle(p->pos, p->radius, p->radius, H4CK3R_GR33N);
 }
 
-void draw_paddle(paddle *p)
+void draw_paddle(paddle *p, int incremental)
 {
     if (p->pos_prev.x == p->pos.x && p->pos_prev.y == p->pos.y) {
         return;
     }
 
-    draw_rectangle(p->pos_prev, p->height, p->width, H4CK3R_BL4CK);
-    draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
+    if (incremental == 0 || (p->pos_prev.x == 0 && p->pos_prev.y == 0)) {
+        draw_rectangle(p->pos_prev, p->height, p->width, H4CK3R_BL4CK);
+        draw_rectangle(p->pos, p->height, p->width, H4CK3R_GR33N);
+        return;
+    }
+
+    if (p->pos.y > p->pos_prev.y) {
+        position pos_prev_bottom = {
+            .x = p->pos_prev.x,
+            .y = p->pos_prev.y + p->height
+        };
+
+        draw_rectangle(p->pos_prev,
+            p->pos.y - p->pos_prev.y,
+            p->width,
+            H4CK3R_BL4CK);
+        draw_rectangle(pos_prev_bottom,
+            p->pos.y + p->height - pos_prev_bottom.y,
+            p->width,
+            H4CK3R_GR33N);
+      } else {
+        position pos_bottom = {
+          .x = p->pos.x,
+          .y = p->pos.y + p->height
+        };
+
+        draw_rectangle(pos_bottom,
+            p->pos_prev.y + p->height - pos_bottom.y,
+            p->width,
+            H4CK3R_BL4CK);
+        draw_rectangle(p->pos,
+            p->pos_prev.y - p->pos.y,
+            p->width,
+            H4CK3R_GR33N);
+    }
 }
 
 void draw_number (int offset_x, int offset_y, int number)
@@ -229,12 +276,3 @@ void draw_number (int offset_x, int offset_y, int number)
             break;
     }
 }
-
-#if DEVELOPMENT == 0
-void set_solid_color(int color)
-{
-    for (int i = 0; i < SCREENSIZE_PIXELS; i++) {
-        fbp[i] = color;
-    }
-}
-#endif

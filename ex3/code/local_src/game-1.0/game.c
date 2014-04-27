@@ -156,8 +156,6 @@ void draw_scores (void)
 
     #if DEVELOPMENT
     draw_sprite (screen, buffer, 0, 0);
-    #else
-    graphics_update ();
     #endif
 }
 
@@ -182,19 +180,22 @@ void player_scored (void)
         player1_score = player2_score = 0;
     }
 
+    draw_paddle(player1, 0);
+    draw_paddle(player2, 0);
+
+    player1->pos_prev = player1->pos;
+    player2->pos_prev = player1->pos;
     draw_scores ();
 }
 
 void draw_game (void)
 {
-    draw_paddle(player1);
-    draw_paddle(player2);
+    draw_paddle(player1, 1);
+    draw_paddle(player2, 1);
     draw_puck(pong);
 
     #if DEVELOPMENT
-        draw_sprite(screen, buffer, 0, 0);
-    #else
-        graphics_update ();
+    draw_sprite(screen, buffer, 0, 0);
     #endif
 }
 
@@ -220,7 +221,7 @@ void move_paddle (paddle *p, int player_up, int player_down)
 
 void move_puck (puck *p)
 {
-    if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
+    if (p->pos.y <= 0 || p->pos.y >= SCREEN_HEIGHT - p->radius - 1) {
         p->direction.y *= -1;
     }
 
@@ -273,6 +274,9 @@ void game_loop (void)
     lag = 0;
     clock_gettime(CLOCK_REALTIME, &spec);
     previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+
+    draw_paddle(player1, 0);
+    draw_paddle(player2, 0);
     draw_scores ();
 
     running = true;
