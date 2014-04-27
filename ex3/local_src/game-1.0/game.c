@@ -1,62 +1,336 @@
+#include "game.h"
+#include "gamepad_buttons.h"
+#include "defines.h"
+#include "graphics.h"
+
+#if DEVELOPMENT
+#include <allegro.h>
+#endif
+
+#include <time.h>
+#include <math.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
 
-static int gamepad_init (void);
-static void sig_handler (int signo);
+#define MAX_SCORE 9
 
-static FILE *gamepad;
+#define MS_PER_UPDATE 42
+#define PX_PER_TICK 3
 
-static void sig_handler (int signo)
+#define EDGE_DISTANCE 20
+#define PADDLE_WIDTH 5
+#define PADDLE_HEIGHT SCREEN_HEIGHT / 5
+
+int H4CK3R_BL4CK;
+int H4CK3R_GR33N;
+
+int player_buttons[8];
+
+int player1_score;
+int player2_score;
+
+bool running;
+
+paddle *player1;
+paddle *player2;
+puck *pong;
+
+#if DEVELOPMENT
+BITMAP *buffer;
+void init_allegro (void)
 {
-        (void) signo;
-	int input = fgetc(gamepad);
-	int i;
-
-	for (i = 0; i < 8; i++) {
-		if (input & 1)
-			printf("1");
-		else
-			printf("0");
-
-		input >>= 1;
-	}
-	printf("\n");
+    allegro_init();
+    install_keyboard();
+    set_color_depth(32);
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
+    buffer = create_bitmap(SCREEN_WIDTH, SCREEN_HEIGHT);
+    clear_to_color(buffer, H4CK3R_BL4CK);
 }
 
-static int gamepad_init (void)
+void allegro_get_input (void)
 {
-        if (!(gamepad = fopen ("/dev/gamepad", "rb"))                   ||
-            (signal(SIGIO, &sig_handler) == SIG_ERR)                    ||
-            (fcntl(fileno(gamepad), F_SETOWN, getpid()) == -1)          ||
-            (fcntl(fileno(gamepad), F_SETFL,
-                  fcntl(fileno(gamepad), F_GETFL) | FASYNC) == -1)) {
+    player_buttons[PLAYER_1_UP] = key[KEY_UP];
+    player_buttons[PLAYER_1_DOWN] = key[KEY_DOWN];
 
-                printf("Couldn't initialize gamepad\n");
-		return EXIT_FAILURE;
+    player_buttons[PLAYER_2_UP] = key[KEY_W];
+    player_buttons[PLAYER_2_DOWN] = key[KEY_S];
+}
+#endif
+
+paddle *paddle_factory (int width, int height, int x, int y)
+{
+    paddle *p = malloc(sizeof(paddle));
+    *p = (paddle) {
+        .width = width,
+        .height = height,
+        .pos = {
+            .x = x,
+            .y = y
+        },
+        .pos_prev = {
+            .x = 0,
+            .y = SCREEN_HEIGHT / 2
+        }
+    };
+
+    return p;
+}
+
+puck *puck_factory (int radius, int direction_x, int direction_y, int x, int y)
+{
+    puck *p = malloc(sizeof(puck));
+    *p = (puck) {
+        .radius = radius,
+        .direction = {
+            .x = direction_x,
+            .y = direction_y
+        },
+        .pos = {
+            .x = x,
+            .y = y
+        },
+        .pos_prev = {
+            .x = 0,
+            .y = 0
         }
 
-        printf("Gamepad initialized\n");
+    };
 
-        return EXIT_SUCCESS;
+    return p;
+}
+
+void game_init (void)
+{
+    #if DEVELOPMENT
+        init_allegro();
+        H4CK3R_BL4CK = makecol(0, 0, 0);
+        H4CK3R_GR33N = makecol(0, 255, 0);
+    #else
+        H4CK3R_BL4CK = HACKERBLACK;
+        H4CK3R_GR33N = HACKERGREEN;
+        graphics_init ();
+
+        if (gamepad_init () == EXIT_FAILURE) {
+            exit (EXIT_FAILURE);
+        }
+    #endif
+    srand(time(NULL));
+
+    player1 = paddle_factory(
+            PADDLE_WIDTH,
+            PADDLE_HEIGHT,
+            EDGE_DISTANCE,
+            SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2);
+
+    player2 = paddle_factory(
+            PADDLE_WIDTH,
+            PADDLE_HEIGHT,
+            SCREEN_WIDTH - EDGE_DISTANCE - PADDLE_WIDTH,
+            SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2);
+
+    pong = puck_factory(5, DIRECTION_RIGHT, DIRECTION_UP, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+
+    player1_score = 0;
+    player2_score = 0;
+}
+
+void game_deinit (int signo)
+{
+    graphics_deinit ();
+
+    free(player1);
+    free(player2);
+    free(pong);
+
+    running = false;
+}
+
+void draw_scores (void)
+{
+    draw_number (3, 3, player1_score);
+    draw_number (SCREEN_WIDTH - 17, 3, player2_score);
+
+    #if DEVELOPMENT
+    draw_sprite (screen, buffer, 0, 0);
+    #else
+    graphics_update ();
+    #endif
+
+    /*int direction_x = pong->direction.x;
+    int direction_y = pong->direction.y;
+
+    pong->direction.x = 0;
+    pong->direction.y = 0;
+
+    usleep(1000000);
+
+    pong->direction.x = direction_x;
+    pong->direction.y = direction_y;*/
+}
+
+void player_scored (void)
+{
+    if (pong->pos.x > 10) {
+        player1_score++;
+    } else {
+        player2_score++;
+    }
+
+    pong->pos.x = SCREEN_WIDTH / 2;
+    pong->pos.y = SCREEN_HEIGHT / 2;
+
+    player1->pos.x = EDGE_DISTANCE;
+    player1->pos.y = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
+    player2->pos.x = SCREEN_WIDTH - EDGE_DISTANCE - PADDLE_WIDTH;
+    player2->pos.y = SCREEN_HEIGHT / 2 - PADDLE_HEIGHT / 2;
+
+    if (player2_score > MAX_SCORE || player1_score > MAX_SCORE) {
+        player1_score = player2_score = 0;
+    }
+
+    draw_scores ();
+}
+
+void draw_game (void)
+{
+    draw_paddle(player1);
+    draw_paddle(player2);
+    draw_puck(pong);
+
+    #if DEVELOPMENT
+        draw_sprite(screen, buffer, 0, 0);
+    #else
+        graphics_update ();
+    #endif
+}
+
+void update (void)
+{
+    move_paddle(player1, PLAYER_1_UP, PLAYER_1_DOWN);
+    move_paddle(player2, PLAYER_2_UP, PLAYER_2_DOWN);
+    move_puck(pong);
+}
+
+void move_paddle (paddle *p, int player_up, int player_down)
+{
+    if (player_buttons[player_up] == player_buttons[player_down]) {
+        return;
+    }
+
+    if (player_buttons[player_up] && p->pos.y > 0) {
+        p->pos.y -= PX_PER_TICK;
+    } else if (player_buttons[player_down] && p->pos.y < SCREEN_HEIGHT - p->height - 1) {
+        p->pos.y += PX_PER_TICK;
+    }
+}
+
+void move_puck (puck *p)
+{
+    if (p->pos.y == 0 || p->pos.y == SCREEN_HEIGHT - p->radius - 1) {
+        p->direction.y *= -1;
+    } 
+
+    if (paddle_puck_overlap(player1, pong)) {
+        if (p->direction.x < 0) {
+            p->direction.x *= -1;
+        }
+    } else if (paddle_puck_overlap(player2, pong)) {
+        if (p->direction.x > 0) {
+            p->direction.x *= -1;
+        }
+    }
+
+    p->pos.y += p->direction.y * PX_PER_TICK;
+    p->pos.x += p->direction.x * PX_PER_TICK;
+
+    if (p->pos.x <= 0 || p->pos.x > SCREEN_WIDTH) {
+        player_scored ();
+    }
+}
+
+int paddle_puck_overlap (paddle *pa, puck *pu)
+{
+    if (pu->pos.x < pa->pos.x + pa->width &&
+            pu->pos.x + pu->radius > pa->pos.x &&
+            pu->pos.y < pa->pos.y + pa->height &&
+            pu->pos.y + pu->radius > pa->pos.y) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+void cp_pos_to_prev (void)
+{
+    player1->pos_prev.x = player1->pos.x;
+    player1->pos_prev.y = player1->pos.y;
+
+    player2->pos_prev.x = player2->pos.x;
+    player2->pos_prev.y = player2->pos.y;
+
+    pong->pos_prev.x = pong->pos.x;
+    pong->pos_prev.y = pong->pos.y;
+}
+
+void game_loop (void)
+{
+    struct timespec spec;
+    long previous;
+    long lag;
+    long sleep;
+    long elapsed;
+    long current;
+
+    lag = 0;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+    draw_scores ();
+
+    running = true;
+    while (running)
+    {
+        clock_gettime(CLOCK_REALTIME, &spec);
+        current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+        elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
+        #if DEVELOPMENT
+        allegro_get_input();
+        #endif
+
+        while (lag >= MS_PER_UPDATE)
+        {
+            update();
+            lag -= MS_PER_UPDATE;
+        }
+
+        draw_game();
+        cp_pos_to_prev();
+
+        sleep = MS_PER_UPDATE - lag;
+        sleep > 0 && usleep(sleep * 1000);
+    }
 }
 
 int main(int argc, char *argv[])
 {
-        printf ("Hello World, I'm game!\n");
+    struct sigaction act;
 
+    /* Install sigterm handler */
+    memset (&act, '\0', sizeof(act));
+    act.sa_sigaction = &game_deinit;
+    act.sa_flags = SA_SIGINFO;
+    (void) sigaction(SIGTERM, &act, NULL);
 
-        /* Open gamepad char device */
-        if (gamepad_init () == EXIT_FAILURE) {
-                exit (EXIT_FAILURE);
-        }
-
-        while(1) {
-                sleep(1);
-        }
-
-        exit (EXIT_SUCCESS);
+    game_init();
+    game_loop();
+    exit (EXIT_SUCCESS);
 }
+#if DEVELOPMENT
+END_OF_MAIN();
+#endif

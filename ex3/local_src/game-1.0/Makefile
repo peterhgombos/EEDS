@@ -1,24 +1,21 @@
-#
-# Simple development makefile
-#
 
-#
-# add more flags here,
-# but don't remove the "+="
-#
-CFLAGS += -O2 -g -Wall -Wsign-compare -Wfloat-equal -Wformat-security -Werror
-CPPFLAGS += -O2 -g -Wall -Werror -mlong-calls
-LDFLAGS +=
+C_FILES := $(wildcard *.c)
+OBJ_FILES := $(notdir $(C_FILES:.c=.o))
 
+C_FILES := $(wildcard *.c)
+OBJ_FILES := $(notdir $(C_FILES:.c=.o))
 
-all: game
+CFLAGS += -O2 -g -Wall -Wsign-compare -Wfloat-equal -Wformat-security -std=gnu99
+LDFLAGS += -lm -lrt
+
+game: $(OBJ_FILES)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	-rm -f game
 
-install:
-
 
 .PHONY: all install clean
-
-# end of development makefile
