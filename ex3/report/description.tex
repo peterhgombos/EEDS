@@ -121,21 +121,22 @@ All the functions for initialising and adding graphics to the framebuffer are
 contained in graphics.s.
 
 The initializing function opens the framebuffer file in Linux, and then maps the
-file to a region in memory.  This is done as it is easier to access an array
-than to search back and forth in the file.  However, when this is done, the
-framebuffer will not update after each write. As something is written to the
-framebuffer, the area edited will be refreshed.
+file to a region in memory. This is done as it is easier to access an array in memory
+than to search back and forth in a file.
 
-To actually make graphics, the draw\_pixel() function will color a given pixel
-with a given color.  It can be called on a subsequent sequense of pixels to
-create a more complex graphic.  For instance, draw\_rectangle() can with the
-draw\_pixel() function create any rectangle on the screen.  As all the graphics
-in the pong implementation in this project are square, to get that real nice
-retro look, only a rectangle function was made.  There would, however, not be
-any problem to create other shapes with this implementation.
+As a write to the memory mapped area does not update the framebuffer,
+one has to refresh it explicitly.
+This is done by sending a special signal to the framebuffer
+along with bounding indexes, allowing for partial screen updates.
 
-The graphics code is generic when it comes to color, but again as the retro
-feel was wanted, only black and green is defined in the program.  It is in the
-specific sprite drawing functions that the color is set.
+To actually make graphics,
+the draw\_pixel() function is used to fill a given pixel with some color.
+It can be called on a subsequent sequence of pixels to create more complex graphics,
+e.g. squares and circles.
+
+To get that nice retro look, all geometry in this impementation of pong is rectangular,
+set to the color of H4CK3R\_GR33N (The Matrix-green).
+It would, however, not be a problem to create other shapes or colors as
+all graphics code is generic and nicely abstracted.
 
 \subsubsection{Energy efficiency optimization}
