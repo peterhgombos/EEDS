@@ -25,42 +25,51 @@ extern BITMAP *buffer;
 #endif
 
 #if DEVELOPMENT == 0
-void init_graphics (void)
+void graphics_init (void)
 {
-        fb_rect.dx = 0;
-        fb_rect.dy = 0;
-        fb_rect.width = 320;
-        fb_rect.height = 240;
+    fb_rect.dx = 0;
+    fb_rect.dy = 0;
+    fb_rect.width = 320;
+    fb_rect.height = 240;
 
-        /* open framebuffer device for reading */
-        fbfd = open("/dev/fb0", O_RDWR);
-        if (fbfd == -1){ 
-            perror("Could not open framebuffer");
-            exit(1);
-        }
+    /* open framebuffer device for reading */
+    fbfd = open("/dev/fb0", O_RDWR);
+    if (fbfd == -1){ 
+        perror("Could not open framebuffer");
+        exit(1);
+    }
 
-        /* map screen to memory region */
-        fbp = (uint16_t *) mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd,0);
-        if ((int) fbp == -1){
-            perror("Could not map framebuffer to memory");
-            exit(2);
-        }
-        set_solid_color(H4CK3R_BL4CK);
+    /* map screen to memory region */
+    fbp = (uint16_t *) mmap(NULL, SCREENSIZE_BYTES,
+        PROT_READ | PROT_WRITE, MAP_SHARED, fbfd,0);
+    if ((int) fbp == -1){
+        perror("Could not map framebuffer to memory");
+        exit(2);
+    }
+    set_solid_color(H4CK3R_BL4CK);
+}
+
+void graphics_deinit (void)
+{
+    /* Ignore return value, as we can't do anything about it if close fails */
+    (void) close(fbfd);
+
+    munmap (fbp, SCREENSIZE_BYTES);
 }
 #endif
 
-void refresh_fb(void)
+void graphics_update (void)
 {
     ioctl(fbfd, 0x4680, &fb_rect);
 }
 
-void draw_pixel(int x, int y, int color)
+void draw_pixel (int x, int y, int color)
 {
     int location = x  + y * 320;
     fbp[location] = color;
 }
 
-void draw_rectangle(position pos, int height, int width, int color)
+void draw_rectangle (position pos, int height, int width, int color)
 {
     #if DEVELOPMENT
         rectfill(buffer, pos.x, pos.y, pos.x + width, pos.y + height, color);

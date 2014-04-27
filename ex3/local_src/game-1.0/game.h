@@ -5,6 +5,7 @@
 #define PLAYER_1_DOWN 1
 #define PLAYER_1_LEFT 2
 #define PLAYER_1_RIGHT 3
+
 #define PLAYER_2_UP 4
 #define PLAYER_2_DOWN 5
 #define PLAYER_2_LEFT 6

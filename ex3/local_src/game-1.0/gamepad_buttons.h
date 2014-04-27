@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-static FILE *gamepad;
-
 int gamepad_init (void);
 void sig_handler (int signo);
 

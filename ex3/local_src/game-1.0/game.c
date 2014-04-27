@@ -9,14 +9,16 @@
 
 #include <time.h>
 #include <math.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #define MAX_SCORE 9
 
-#define MS_PER_UPDATE 20
-#define PX_PER_TICK 2
+#define MS_PER_UPDATE 42
+#define PX_PER_TICK 3
 
 #define EDGE_DISTANCE 20
 #define PADDLE_WIDTH 5
@@ -29,6 +31,8 @@ int player_buttons[8];
 
 int player1_score;
 int player2_score;
+
+bool running;
 
 paddle *player1;
 paddle *player2;
@@ -107,7 +111,7 @@ void game_init (void)
     #else
         H4CK3R_BL4CK = HACKERBLACK;
         H4CK3R_GR33N = HACKERGREEN;
-        init_graphics();
+        graphics_init ();
 
         if (gamepad_init () == EXIT_FAILURE) {
             exit (EXIT_FAILURE);
@@ -133,6 +137,17 @@ void game_init (void)
     player2_score = 0;
 }
 
+void game_deinit (int signo)
+{
+    graphics_deinit ();
+
+    free(player1);
+    free(player2);
+    free(pong);
+
+    running = false;
+}
+
 void draw_scores (void)
 {
     draw_number (3, 3, player1_score);
@@ -141,8 +156,19 @@ void draw_scores (void)
     #if DEVELOPMENT
     draw_sprite (screen, buffer, 0, 0);
     #else
-    refresh_fb ();
+    graphics_update ();
     #endif
+
+    /*int direction_x = pong->direction.x;
+    int direction_y = pong->direction.y;
+
+    pong->direction.x = 0;
+    pong->direction.y = 0;
+
+    usleep(1000000);
+
+    pong->direction.x = direction_x;
+    pong->direction.y = direction_y;*/
 }
 
 void player_scored (void)
@@ -178,7 +204,7 @@ void draw_game (void)
     #if DEVELOPMENT
         draw_sprite(screen, buffer, 0, 0);
     #else
-        refresh_fb();
+        graphics_update ();
     #endif
 }
 
@@ -253,16 +279,23 @@ void cp_pos_to_prev (void)
 void game_loop (void)
 {
     struct timespec spec;
-    clock_gettime(CLOCK_REALTIME, &spec);
-    long previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
-    long lag = 0;
+    long previous;
+    long lag;
+    long sleep;
+    long elapsed;
+    long current;
 
+    lag = 0;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    previous = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
     draw_scores ();
-    while (YES)
+
+    running = true;
+    while (running)
     {
         clock_gettime(CLOCK_REALTIME, &spec);
-        long current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
-        long elapsed = current - previous;
+        current = round(spec.tv_nsec / 1.0e6) + spec.tv_sec * 1000;
+        elapsed = current - previous;
         previous = current;
         lag += elapsed;
 
@@ -279,13 +312,21 @@ void game_loop (void)
         draw_game();
         cp_pos_to_prev();
 
-        long sleep = MS_PER_UPDATE - lag;
+        sleep = MS_PER_UPDATE - lag;
         sleep > 0 && usleep(sleep * 1000);
     }
 }
 
 int main(int argc, char *argv[])
 {
+    struct sigaction act;
+
+    /* Install sigterm handler */
+    memset (&act, '\0', sizeof(act));
+    act.sa_sigaction = &game_deinit;
+    act.sa_flags = SA_SIGINFO;
+    (void) sigaction(SIGTERM, &act, NULL);
+
     game_init();
     game_loop();
     exit (EXIT_SUCCESS);
