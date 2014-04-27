@@ -189,8 +189,8 @@ sleep mode is entered for the remainder (time\_to\_next\_update).
 
 The extremely tuned Pong-implementation presented herein spends rougly $ 1 ms $
 in each loop iteration, allowing a maximum framerate of $ 1000 fps $.
-When targeting $ 24 fps $, the program can sleep for $ 41 ms $ per cycle.
-This is a sleep percentage of over $ 97 \% $.
+When targeting $ 24 fps $, the program can sleep for $ 41 ms $ per $ 42 ms $ cycle,
+spending $ 97 \% $ of execution sleeping.
 
 \begin{algorithm}
   \caption{Game main loop}
@@ -240,14 +240,12 @@ one has to refresh it explicitly.
 This is done by sending a special signal to the framebuffer
 along with bounding indexes, allowing for partial screen updates.
 
-To actually make graphics,
-the draw\_pixel() function is used to fill a given pixel with some color.
-It can be called on a subsequent sequence of pixels to create more complex graphics,
-e.g. squares and circles.
+The draw\_pixel() function is used to fill a given pixel with some color.
+When called on a sequence of pixels more complex graphics can be created.
+This Pong implementation includes a fully-functional 7-segment digital watch display,
+used for displaying player scores.
 
 To get that nice retro look, all geometry in this impementation of pong is rectangular,
 set to the color of H4CK3R\_GR33N (The Matrix-green).
-It would, however, not be a problem to create other shapes or colors as
-all graphics code is generic and nicely abstracted.
 
 \subsubsection{Energy efficiency optimization}
