@@ -63,7 +63,6 @@ void game_loop (void)
 
 
 \subsubsection{Input handling}
-
 Whenever the gamepad changes state, i.e. a button is released or pressed,
 a signal is received which in turn invokes an input interrupt handler.
 
@@ -78,20 +77,25 @@ from having to poll the driver for each iteration of the main game loop.
 
 \subsubsection{Graphics}
 To display graphics on the screen, the game uses the Linux framebuffer device.
-All the functions for initialising and adding graphics to the framebuffer are contained in graphics.s.
+All the functions for initialising and adding graphics to the framebuffer are
+contained in graphics.s.
 
-The initializing function opens the framebuffer file in Linux, and then maps the file to a region in memory.
-This is done as it is easier to access an array than to search back and forth in the file.
-However, when this is done, the framebuffer will not update after each write.
-The function graphics_update does this, and should be called by the game at each frame refresh.
+The initializing function opens the framebuffer file in Linux, and then maps the
+file to a region in memory.  This is done as it is easier to access an array
+than to search back and forth in the file.  However, when this is done, the
+framebuffer will not update after each write.  The function graphics\_update()
+does this, and should be called by the game at each frame refresh.
 
-To actually make graphics, the draw_pixel function will color a given pixel with a given color.
-It can be called on a subsequent sequense of pixels to create a more complex graphic.
-For instance, draw_rectangle can with the draw_pixel function create any rectangle on the screen.
-As all the graphics in the pong implementation in this project are square, to get that real nice retro look, only a rectangle function was made.
-There would, however, not be any problem to create other shapes with this implementation.
+To actually make graphics, the draw\_pixel() function will color a given pixel
+with a given color.  It can be called on a subsequent sequense of pixels to
+create a more complex graphic.  For instance, draw\_rectangle() can with the
+draw\_pixel() function create any rectangle on the screen.  As all the graphics in
+the pong implementation in this project are square, to get that real nice retro
+look, only a rectangle function was made.  There would, however, not be any
+problem to create other shapes with this implementation.
 
-The graphics code is generic when it comes to color, but again as the retro feel was wanted, only black and green is defined in the program.
-It is in the specific sprite drawing functions that the color is set.
+The graphics code is generic when it comes to color, but again as the retro feel
+was wanted, only black and green is defined in the program.  It is in the
+specific sprite drawing functions that the color is set.
 
 \subsubsection{Energy efficiency optimization}
