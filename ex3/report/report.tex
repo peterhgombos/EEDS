@@ -1,0 +1,44 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage{mystyle}
+
+\include{macros}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{varioref}
+
+\lstset {
+    language=C,
+    tabsize=2,
+    frame=single,
+    breaklines=true,
+    basicstyle=\ttfamily\scriptsize
+}
+
+\begin{document}
+
+\include{frontpage}
+\include{abstract}
+
+\tableofcontents
+\listoffigures
+\renewcommand*{\lstlistlistingname}{List of Listings}
+\lstlistoflistings
+\newpage
+
+% innledning er side 1
+\pagestyle{fancy}
+\setcounter{page}{1}
+
+\include{introduction}
+\include{description}
+\include{results}
+\include{evaluation}
+\include{conclusion}
+
+\bibliography{references}
+\bibliographystyle{plain}
+\nocite{*}
+    
+
+\end{document}
