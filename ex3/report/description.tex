@@ -1,6 +1,44 @@
 \section{Description and Methodology}
 
 \subsection{Linux build process}
+To build the uCLinux distribution for the micro controller, PTXDist is used.\cite{ptxdistguru}
+This is done because the features of a real distrobution is wanted, and PTXDist
+allows to create a unique distrobution.
+
+\begin{verbatim}
+ptxdist select configs/ptxconfig
+ptxdist platform <platform>
+ptxdist toolchain <toolchain>
+\end{verbatim}
+
+These commands are run to set the userland configuration, which platform to
+develop for and choosing the toolchain to build for this platform
+
+\begin{verbatim}
+ptxdist go
+\end{verbatim}
+
+Is used to compile the components needed. The script is smart enough to not
+compile everything everytime it is runned, so it can be used to just compile
+some parts of the project.
+
+\begin{verbatim}
+ptxdist images
+\end{verbatim}
+
+To build the image that can be flashed to the device, this command is used. To
+not build the root image every time other parts of the distrobution is edited,
+the specific image to build can be used.
+
+\begin{verbatim}
+ptxdist test flash-all
+\end{verbatim}
+
+This is used to flash all images to the device. Again, to not flash things that
+don't need to be flashed each time, a more specific image to flash can be given
+as argument.
+
+
 
 \subsection{The driver}
 
