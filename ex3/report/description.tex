@@ -155,13 +155,17 @@ clean and maintainable, using correct game programming patterns whenever
 possible, while still keeping focus on energy efficiency.
 
 As pong is a 'realtime' game, the amount of time one can spend asleep is
-reduced compared to a game like chess, where the game can be entirely gamepad
-interrupt driven.  To conserve power, the game enters sleep mode as often as
-possible, and heavy calculations such as collision detection are avoided
-whenever possible.
+somewhat reduced compared to a game like chess,
+where the game can be entirely gamepad interrupt driven.
 
-Additional care was taken to redraw as few pixels as possible during screen
-updates.
+Additional care is taken to redraw the minimum amount of pixels necessary
+during screen updates, as system calls take valuable CPU cycles not available.
+Heavy calculations such as collision detection are avoided untill the last
+minute.
+
+To conserve power, the game enters sleep mode after rendering a frame,
+allowing for a very high rate of sleep
+($ 94\% $ with a framerate of $ 60 $ and a render time of $ 1 ms $).
 
 \begin{figure}[H]
 \centering
@@ -176,16 +180,17 @@ Following established patterns of game programming, updates of the games
 internal state are fully decoupled from the rendering thereof.
 
 At the start of each iteration of the game loop, lag (how much time we haven't
-accounted for) is calculated, and caught up with.  This allows the game to
-simulate at a fixed rate even on slower hardware, reducing only visual
-performance.
+accounted for) is calculated, and caught up with.
+This allows the game to simulate at a fixed rate even on slower hardware,
+reducing visual performance only.
 
 If the game loop finishes ahead of time (using less than MS\_PER\_UPDATE ms),
 sleep mode is entered for the remainder (time\_to\_next\_update).
 
-With an internal update frequency target of 24 fps, ENTER EXAMPLE WITH
-MICROCONTROLLER DATA HERE.  This allows the program to spend most of its time
-sleeping.
+The extremely tuned Pong-implementation presented herein spends rougly $ 1 ms $
+in each loop iteration, allowing a maximum framerate of $ 1000 fps $.
+When targeting $ 24 fps $, the program can sleep for $ 41 ms $ per cycle.
+This is a sleep percentage of over $ 97 \% $.
 
 \begin{algorithm}
   \caption{Game main loop}
