@@ -45,11 +45,11 @@ as argument.
 
 \subsection{The driver}
 
-To receive button inputs from the player, a driver for the
-provided gamepad was implemented. Because the gamepad isn't discoverable, it is
-implemented as a platform device. This means that the platform driver
-\footnotemark registers that it can handle the device "tdt4259", which is then
-matched by the system to the platform device by the same name.
+To receive button inputs from the player, a driver for the provided gamepad was
+implemented. Because the gamepad isn't discoverable, it is implemented as a
+platform device. This means that the platform driver\footnotemark registers
+that it can handle the device "tdt4259", which is then matched by the system to
+the platform device by the same name.
 
 \footnotetext{
   \url{https://www.kernel.org/doc/Documentation/driver-model/platform.txt}
@@ -57,96 +57,88 @@ matched by the system to the platform device by the same name.
 
 As opposed to the old way of implementing drivers in Linux, when the module is
 loaded or unloaded, it is merely registered or unregistered as an available
-platform driver. The system will then call the registered probe() and release()
-functions when required.
+platform driver. The system will then call the registered probe and remove
+functions when required, shown in Algorithms~\ref{func:probe}
+and~\ref{func:remove} respectively.
 
-\begin{algorithmic}
+\begin{algorithm}
   \footnotesize
-  \Function{dev\_probe}{pdev}
-    \State $\Call{hardware\_init}{\null}$ \\
+  \caption{Platform driver probe}
+  \begin{algorithmic}[1]
+    \Function{probe}{pdev}
+      \State $\Call{hardware\_init}{\null}$ \\
 
-    \State $irq\_even \gets \Call{platform\_get\_irq}{pdev, irq\_even}$
-    \State $irq\_odd \gets \Call{platform\_get\_irq}{pdev, irq\_odd}$
-    \State $\Call{request\_irq}{irq\_even, irq\_handler\_func, \
-      irqf\_disabled, device\_name, null}$
-    \State $\Call{request\_irq}{irq\_odd, irq\_handler\_func, \
-      irqf\_disabled, device\_name, null}$ \\
+      \State $irq\_even \gets \Call{platform\_get\_irq}{pdev, irq\_even}$
+      \State $irq\_odd \gets \Call{platform\_get\_irq}{pdev, irq\_odd}$
+      \State $\Call{request\_irq}{irq\_even, irq\_handler, \
+        irqf\_disabled, device\_name, null}$
+      \State $\Call{request\_irq}{irq\_odd, irq\_handler, \
+        irqf\_disabled, device\_name, null}$ \\
 
-    \State $res \gets \Call{platform\_get\_resource}{pdev, ioresource\_mem, 0}$
-    \State $size \gets \Call{resource\_size}{res}$
-    \State $\Call{request\_mem\_region}{res.start,  size, \
-      pdev{\rightarrow}name}$ \\
+      \State $res \gets \Call{platform\_get\_resource}{pdev,
+        ioresource\_mem, 0}$
+      \State $size \gets \Call{resource\_size}{res}$
+      \State $\Call{request\_mem\_region}{res.start,  size, \
+        pdev{\rightarrow}name}$ \\
 
-    \State $\Call{alloc\_chrdev\_region}{\&devno, 0, 1, device\_name}$ \\
+      \State $\Call{alloc\_chrdev\_region}{\&devno, 0, 1, device\_name}$ \\
 
 
-    \State $cl \gets \Call{class\_create}{this\_module, device\_name}$
-    \State $\Call{device\_create}{cl, null, devno, null, device\_name}$ \\
+      \State $cl \gets \Call{class\_create}{this\_module, device\_name}$
+      \State $\Call{device\_create}{cl, null, devno, null, device\_name}$ \\
 
-    \State $\Call{cdev\_init}{\&c\_dev, \&f\_ops}$
-    \State $c\_dev.owner \gets this\_module$
-    \State $\Call{cdev\_add}{\&c\_dev, devno, 1}$ \\
+      \State $\Call{cdev\_init}{\&c\_dev, \&f\_ops}$
+      \State $c\_dev.owner \gets this\_module$
+      \State $\Call{cdev\_add}{\&c\_dev, devno, 1}$ \\
 
-    \State $\Call{interrupt\_enable}{\null}$
-  \EndFunction
-\end{algorithmic}
-
-\begin{algorithmic}
-  \footnotesize
-  \Function{dev\_remove}{pdev}
-    \State $\Call{interrupt\_disable}{\null}$ \\
-    \State $\Call{cdev\_del}{\&c\_dev}$
-    \State $\Call{device\_destroy}{c, devno}$
-    \State $\Call{unregister\_chrdev\_region}{0, 1}$
-
-    \State $irq\_even \gets \Call{platform\_get\_irq}{pdev, irq\_even}$
-    \State $irq\_odd \gets \Call{platform\_get\_irq}{pdev, irq\_odd}$
-    \State $\Call{free\_irq}{irq\_even}$
-    \State $\Call{free\_irq}{irq\_odd}$
-
-    \State $res \gets \Call{platform\_get\_resource}{pdev, ioresource\_mem, 0}$
-    \State $size \gets \Call{resource\_size}{res}$
-    \State $\Call{release\_mem\_region}{res.start, size}$
-  \EndFunction
-\end{algorithmic}
-
-\begin{algorithmic}
-  \footnotesize
-  \Function{irq\_handler\_func}{irq, dev\_id, regs}
-    \State $\Call{gpio\_interrupt\_flags\_clear}{\null}$
-    \State $button\_state \gets \Call{gpio\_button\_state}{\null}$
-    \If {$async\_queue$}
-      \State $\Call{kill\_fasync}{\&async\_queue, sigio, poll\_in}$
-    \EndIf
-  \EndFunction
-\end{algorithmic}
-
-\begin{algorithmic}
-  \footnotesize
-  \Function{dev\_open}{inode, filp}
-    \If {$use\_count = 0$}
       \State $\Call{interrupt\_enable}{\null}$
-    \EndIf
-    \State $use\_count \gets use\_count + 1$
-  \EndFunction
-\end{algorithmic}
+    \EndFunction
+  \end{algorithmic}
+  \label{func:probe}
+\end{algorithm}
 
-\begin{algorithmic}
+\begin{algorithm}[H]
   \footnotesize
-  \Function{dev\_release}{inode, filp}
-    \State $use\_count \gets use\_count - 1$
-    \If {$use\_count = 0$}
-      \State $\Call{interrupt\_disable}{\null}$
-    \EndIf
-  \EndFunction
-\end{algorithmic}
+  \caption{Platform driver remove}
+  \begin{algorithmic}[1]
+    \Function{remove}{pdev}
+      \State $\Call{interrupt\_disable}{\null}$ \\
+      \State $\Call{cdev\_del}{\&c\_dev}$
+      \State $\Call{device\_destroy}{c, devno}$
+      \State $\Call{unregister\_chrdev\_region}{0, 1}$ \\
 
-\begin{algorithmic}
+      \State $irq\_even \gets \Call{platform\_get\_irq}{pdev, irq\_even}$
+      \State $irq\_odd \gets \Call{platform\_get\_irq}{pdev, irq\_odd}$
+      \State $\Call{free\_irq}{irq\_even}$
+      \State $\Call{free\_irq}{irq\_odd}$ \\
+
+      \State $res \gets \Call{platform\_get\_resource}{pdev, \
+        ioresource\_mem, 0}$
+      \State $size \gets \Call{resource\_size}{res}$
+      \State $\Call{release\_mem\_region}{res.start, size}$
+    \EndFunction
+  \end{algorithmic}
+  \label{func:remove}
+\end{algorithm}
+
+When the user presses a button, the button interrupt handler~\ref{func:irq} is
+called. This caches the current state of the gamepad buttons, which can be read
+by calling $read()$ on the character device.
+
+\begin{algorithm}
   \footnotesize
-  \Function{dev\_read}{filp, buff, len, off}
-    \State $\Call{copy\_to\_user}{buff, \&button\_state, 1}$
-  \EndFunction
-\end{algorithmic}
+  \caption{Button interrupt handler}
+  \begin{algorithmic}[1]
+    \Function{irq\_handler}{irq, dev\_id, regs}
+      \State $\Call{gpio\_interrupt\_flags\_clear}{\null}$
+      \State $button\_state \gets \Call{gpio\_button\_state}{\null}$
+      \If {$async\_queue$}
+        \State $\Call{kill\_fasync}{\&async\_queue, sigio, poll\_in}$
+      \EndIf
+    \EndFunction
+  \end{algorithmic}
+  \label{func:irq}
+\end{algorithm}
 
 \subsection{The game}
 
