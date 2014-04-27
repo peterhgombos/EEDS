@@ -6,7 +6,61 @@
 
 \subsection{The game}
 
+The game implemented is Pong. Focus during development was kept on keeping code
+clean and maintainable, using correct game programming patterns whenever possible,
+while still keeping focus on energy efficiency.
+
+As pong is a 'realtime' game, the amount of time one can spend asleep is reduced
+compared to a game like chess, where the game can be entirely gamepad interrupt driven.
+To conserve power, the game enters sleep mode as often as possible, and
+heavy calculations such as collision detection are avoided whenever possible.
+
+Additional care was taken to redraw as fex pixels as possible during screen updates.
+
 \subsubsection{Structure of the game}
+
+Following established patterns of game programming,
+updates of the games internal state are fully decoupled from the rendering thereof.
+
+At the start of each iteration of the game loop,
+lag (how much time we haven't accounted for) is calculated, and caught up with.
+This allows the game to simulate at a fixed rate even on slower hardware,
+reducing only visual performance.
+
+If the game loop finishes ahead of time (using less than MS\_PER\_UPDATE ms),
+sleep mode is entered for the remainder (time\_to\_next\_update).
+
+With an internal update frequency target of 24 fps,
+ENTER EXAMPLE WITH MICROCONTROLLER DATA HERE.
+This allows the program to spend most of its time sleeping.
+
+\begin{lstlisting}[caption={Main game loop}, label={lst:main-game-loop}]
+/* Some code ommited for brevity */
+void game_loop (void)
+{
+    lag = 0;
+    previous_time = get_time ();
+
+    while (running)
+    {
+        current_time = get_time ();
+        elapsed = current_time - previous_time;
+        lag += elapsed;
+
+        while (lag >= MS_PER_UPDATE)
+        {
+            update ();
+            lag -= MS_PER_UPDATE;
+        }
+
+        draw_game ();
+
+        time_to_next_update = MS_PER_UPDATE - lag;
+        sleep (time_to_next_update);
+    }
+}
+\end{lstlisting}
+
 
 \subsubsection{Input handling}
 
