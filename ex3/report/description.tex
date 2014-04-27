@@ -75,12 +75,11 @@ To display graphics on the screen, the game uses the Linux framebuffer device.
 All the functions for initialising and adding graphics to the framebuffer are
 contained in graphics.s.
 
-The initializing function opens the framebuffer file in Linux, and then maps
-the file to a region in memory.  This is done as it is easier to access an
-array than to search back and forth in the file.  However, when this is done,
-the framebuffer will not update after each write.  The function
-graphics\_update() does this, and should be called by the game at each frame
-refresh.
+The initializing function opens the framebuffer file in Linux, and then maps the
+file to a region in memory.  This is done as it is easier to access an array
+than to search back and forth in the file.  However, when this is done, the
+framebuffer will not update after each write. As something is written to the
+framebuffer, the area edited will be refreshed.
 
 To actually make graphics, the draw\_pixel() function will color a given pixel
 with a given color.  It can be called on a subsequent sequense of pixels to
