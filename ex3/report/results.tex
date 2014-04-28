@@ -1,9 +1,14 @@
 \section{Results and Tests}
-To test the energy consumption of the game, the eAProfiler tool was used. First,
-as can be seen in figure \ref{fig:nosleep}, a version of the game where the game loop
-is running non stop was tested. The interesting thing to see is the comparison
-to figure \ref{fig:sleep}, where the device goes to sleep after each iteration
-of the game loop, and only wakes up when it is time to draw a new frame.
+To test energy consumption during gameplay, the eAProfiler tool was used.
+
+First, as can be seen in figure \ref{fig:nosleep},
+the naive implementation is tested.
+This version does not enter sleep mode after rendering a frame,
+and contains no framebuffer rendering optimizations.
+
+The high spikes (around $ 35 ma $ ) originate from when the
+display buffer is refreshed (\emph{76800} system calls!). This implementation has an average
+power consumption of rougly $ 33 ma $. Not very efficient.
 
 \begin{figure}[H]
 \centering
@@ -12,6 +17,19 @@ of the game loop, and only wakes up when it is time to draw a new frame.
 \label{fig:nosleep}
 \end{figure}
 
+The interesting thing to see is the comparison to figure
+\ref{fig:sleep}, where the device goes to sleep after each
+game loop iteration, only waking when it feels the time is
+right to draw a new frame.
+
+This version averages $ 29.01 mA $ when avake,
+$ 7.59 mA $ when sleeping,
+and $ 11.95 mA $ when averaged over 10 seconds.
+
+The fat spikes are from when the framebuffer redraws.
+The thin spikes are from kernel ticks,
+these can be turned off for additional power savings.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figures/sleep.pdf}
@@ -19,11 +37,5 @@ of the game loop, and only wakes up when it is time to draw a new frame.
 \label{fig:sleep}
 \end{figure}
 
-The power usage of the different implementations are nearly identical in the
-peaks, but as shown in figure \ref{fig:sleep}, the game saves a lot of energy by
-going into a low powered state when not having to do anything.
-
-% Sleeping: 7.59mA
-% Awake: 29.01mA
-% Total: 11.95mA
-% Averaged over 10 seconds
+The power usage of the different implementations are nearly identical at the
+peaks, but as shown in figure \ref{fig:sleep}, the energy savings are considerable.
