@@ -14,4 +14,4 @@ set terminal pdf
 set out "sleep.pdf"
 unset key
 
-plot "partial_fb_refresh" using 1:2 with lines title "Sleep" linecolor rgb "red"
+plot "sleep" using 1:2 with lines title "Sleep" linecolor rgb "red"
