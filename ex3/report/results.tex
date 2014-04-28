@@ -1,5 +1,5 @@
 \section{Results and Tests}
-To test energy consumption during gameplay, the eAProfiler tool was used.
+To test energy consumption during game play, the eAProfiler tool was used.
 
 First, as can be seen in figure \ref{fig:nosleep},
 the naive implementation is tested.
@@ -8,7 +8,7 @@ and contains no framebuffer rendering optimizations.
 
 The high spikes (around $ 35 ma $ ) originate from when the
 display buffer is refreshed (\emph{76800} system calls!). This implementation has an average
-power consumption of rougly $ 33 ma $. Not very efficient.
+power consumption of roughly $ 33 ma $. Not very efficient.
 
 \begin{figure}[H]
 \centering
@@ -22,7 +22,7 @@ The interesting thing to see is the comparison to figure
 game loop iteration, only waking when it feels the time is
 right to draw a new frame.
 
-This version averages $ 29.01 mA $ when avake,
+This version averages $ 29.01 mA $ when awake,
 $ 7.59 mA $ when sleeping,
 and $ 11.95 mA $ when averaged over 10 seconds.
 
