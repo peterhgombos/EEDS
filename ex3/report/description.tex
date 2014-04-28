@@ -3,7 +3,7 @@
 \subsection{Linux build process}
 To build the uCLinux distribution for the microcontroller, PTXDist is
 used\cite{ptxdistguru}. This is done because the features of a real
-distrobution is wanted, and PTXDist allows to create a unique distrobution.
+distribution is wanted, and PTXDist allows to create a unique distribution.
 
 \begin{verbatim}
 ptxdist select configs/ptxconfig
@@ -21,7 +21,7 @@ ptxdist go
 
 \noindent
 Is used to compile the components needed. The script is smart enough to not
-compile everything everytime it is runned, so it can be used to just compile
+compile everything every time it is ran, so it can be used to just compile
 some parts of the project.
 
 \begin{verbatim}
@@ -30,7 +30,7 @@ ptxdist images
 
 \noindent
 To build the image that can be flashed to the device, this command is used. To
-not build the root image every time other parts of the distrobution is edited,
+not build the root image every time other parts of the distribution is edited,
 the specific image to build can be used.
 
 \begin{verbatim}
@@ -45,8 +45,8 @@ as argument.
 
 \subsection{The driver}
 
-To receive button inputs from the player, a driver for the provided gamepad was
-implemented. Because the gamepad isn't discoverable, it is implemented as a
+To receive button inputs from the player, a driver for the provided game pad was
+implemented. Because the game pad isn't discoverable, it is implemented as a
 platform device. This means that the platform driver\footnotemark registers
 that it can handle the device "tdt4259", which is then matched by the system to
 the platform device by the same name.
@@ -61,9 +61,9 @@ available platform driver. The system will then call the registered probe and
 remove functions when required, shown in Algorithms~\ref{func:probe}
 and~\ref{func:remove} respectively.
 
-When the system calls the probe() function, the module initializes the gamepad
-hardware, allocates and maps memory to access the gamepad's signal lines,
-registers the gamepad device with sysfs and then creates a character device
+When the system calls the probe() function, the module initializes the game pad
+hardware, allocates and maps memory to access the game pad's signal lines,
+registers the game pad device with sysfs and then creates a character device
 which can be read from userspace.
 
 \begin{algorithm}
@@ -101,7 +101,7 @@ which can be read from userspace.
 \end{algorithm}
 
 When remove() the character device is destroyed, the interrupt handler is
-removed and gamepad I/O lines are released.
+removed and game pad I/O lines are released.
  
 \begin{algorithm}[H]
   \footnotesize
@@ -128,8 +128,8 @@ removed and gamepad I/O lines are released.
 \end{algorithm}
 
 When the user presses a button, the button interrupt handler~\ref{func:irq} is
-called. This caches the current state of the gamepad buttons, and sends a SIGIO
-signal to usespace, which can read the state of the gamepad buttons by calling
+called. This caches the current state of the game pad buttons, and sends a SIGIO
+signal to userspace, which can read the state of the gamepad buttons by calling
 $read()$ on the character device.
 
 \begin{algorithm}
@@ -160,13 +160,13 @@ The game implemented is Pong. Focus during development was kept on keeping code
 clean and maintainable, using correct game programming patterns whenever
 possible, while still keeping focus on energy efficiency.
 
-As pong is a 'realtime' game, the amount of time one can spend asleep is
+As Pong is a 'real time' game, the amount of time one can spend asleep is
 somewhat reduced compared to a game like chess,
 where the game can be entirely gamepad interrupt driven.
 
 Additional care is taken to redraw the minimum amount of pixels necessary
 during screen updates, as system calls take valuable CPU cycles not available.
-Heavy calculations such as collision detection are avoided untill the last
+Heavy calculations such as collision detection are avoided until the last
 minute.
 
 To conserve power, the game enters sleep mode after rendering a frame,
@@ -176,7 +176,7 @@ allowing for a very high rate of sleep
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/gameplay.jpg}
-\caption{Gameplay shot}
+\caption{Game play shot}
 
 \end{figure}
 
@@ -193,7 +193,7 @@ reducing visual performance only.
 If the game loop finishes ahead of time (using less than MS\_PER\_UPDATE ms),
 sleep mode is entered for the remainder (time\_to\_next\_update).
 
-The extremely tuned Pong-implementation presented herein spends rougly $ 1 ms $
+The extremely tuned Pong-implementation presented herein spends roughly $ 1 ms $
 in each loop iteration, allowing a maximum framerate of $ 1000 fps $.
 When targeting $ 24 fps $, the program can sleep for $ 41 ms $ per $ 42 ms $ cycle,
 spending $ 97 \% $ of execution sleeping.
@@ -229,12 +229,12 @@ of active keys. This abstraction layer between input and internal state is used
 to allow for multiple methods of input, practical during development when a
 computer keyboard is used.
 
-Having an allways up to date version of button state cached frees the program
+Having an all ways up to date version of button state cached frees the program
 from having to poll the driver for each iteration of the main game loop.
 
 \subsubsection{Graphics}
 To display graphics on the screen, the game uses the Linux framebuffer device.
-All the functions for initialising and adding graphics to the framebuffer are
+All the functions for initializing and adding graphics to the framebuffer are
 contained in graphics.s.
 
 The initializing function opens the framebuffer file in Linux, and then maps the
@@ -251,11 +251,11 @@ When called on a sequence of pixels more complex graphics can be created.
 This Pong implementation includes a fully-functional 7-segment digital watch display,
 used for displaying player scores.
 
-To get that nice retro look, all geometry in this impementation of pong is rectangular,
+To get that nice retro look, all geometry in this implementation of Pong is rectangular,
 set to the color of H4CK3R\_GR33N (The Matrix-green).
 
 \subsubsection{Energy efficiency optimization}
-After the observation that rougly $ 99 \% $ of time spent in each iteration of the
+After the observation that roughly $ 99 \% $ of time spent in each iteration of the
 main game loop (122 out of 123 ms) was consumed inside the render function redrawing
 the \emph{entire} framebuffer,
 it was realized that system calls are a costly operation and should be kept to a minimum.
@@ -266,7 +266,7 @@ both mandating the inclusion of a previous\_position attribute on paddles and pu
 The first improvement consists of moving the framebuffer refresh into the
 rectangle-rendering function, refreshing only modified parts of the framebuffer.
 The second improvement consists of calculating the difference between the current
-and previous positions of gameplay objects, redrawing only the difference between them.
+and previous positions of game play objects, redrawing only the difference between them.
 This allows for considerable savings as a paddle at most moves three pixels per frame,
 allowing a tenfold reduction in system calls.
 
