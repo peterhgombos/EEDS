@@ -55,11 +55,16 @@ the platform device by the same name.
   \url{https://www.kernel.org/doc/Documentation/driver-model/platform.txt}
 }
 
-As opposed to the old way of implementing drivers in Linux, when the module is
-loaded or unloaded, it is merely registered or unregistered as an available
-platform driver. The system will then call the registered probe and remove
-functions when required, shown in Algorithms~\ref{func:probe}
+As opposed to the old way of implementing drivers in Linux, when the kernel
+module is loaded or unloaded, it is merely registered or unregistered as an
+available platform driver. The system will then call the registered probe and
+remove functions when required, shown in Algorithms~\ref{func:probe}
 and~\ref{func:remove} respectively.
+
+When the system calls the probe() function, the module initializes the gamepad
+hardware, allocates and maps memory to access the gamepad's signal lines,
+registers the gamepad device with sysfs and then creates a character device
+which can be read from userspace.
 
 \begin{algorithm}
   \footnotesize
@@ -81,12 +86,10 @@ and~\ref{func:remove} respectively.
       \State $\Call{request\_mem\_region}{res.start,  size, \
         pdev{\rightarrow}name}$ \\
 
-      \State $\Call{alloc\_chrdev\_region}{\&devno, 0, 1, device\_name}$ \\
-
-
       \State $cl \gets \Call{class\_create}{this\_module, device\_name}$
       \State $\Call{device\_create}{cl, null, devno, null, device\_name}$ \\
 
+      \State $\Call{alloc\_chrdev\_region}{\&devno, 0, 1, device\_name}$ \\
       \State $\Call{cdev\_init}{\&c\_dev, \&f\_ops}$
       \State $c\_dev.owner \gets this\_module$
       \State $\Call{cdev\_add}{\&c\_dev, devno, 1}$ \\
@@ -97,6 +100,9 @@ and~\ref{func:remove} respectively.
   \label{func:probe}
 \end{algorithm}
 
+When remove() the character device is destroyed, the interrupt handler is
+removed and gamepad I/O lines are released.
+ 
 \begin{algorithm}[H]
   \footnotesize
   \caption{Platform driver remove}
@@ -122,8 +128,9 @@ and~\ref{func:remove} respectively.
 \end{algorithm}
 
 When the user presses a button, the button interrupt handler~\ref{func:irq} is
-called. This caches the current state of the gamepad buttons, which can be read
-by calling $read()$ on the character device.
+called. This caches the current state of the gamepad buttons, and sends a SIGIO
+signal to usespace, which can read the state of the gamepad buttons by calling
+$read()$ on the character device.
 
 \begin{algorithm}
   \footnotesize
@@ -139,6 +146,13 @@ by calling $read()$ on the character device.
   \end{algorithmic}
   \label{func:irq}
 \end{algorithm}
+
+By using an interrupt to read the gamepad, and a signal to notify userspace,
+the presented solution attempts to conserve energy, by sleeping the CPU as much
+as possible. By presenting the raw state of the gamepad buttons, as opposed to
+passing button events to userspace, applications are offered flexibility in how
+to handle button presses, whether that be caching the state internally, as is
+done here, or by generating button events in userspace.
 
 \subsection{The game}
 
