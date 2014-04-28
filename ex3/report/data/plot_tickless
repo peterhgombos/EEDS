@@ -1,0 +1,17 @@
+set xlabel "Time (s)"
+set ylabel "Current (mA)"
+
+set xrange [0:0.2]
+
+set logscale y
+set yrange [5:40]
+set ytics (5, 7.5, 10, 15, 20, 25, 30, 35)
+
+set xlabel "Time (s)"
+set ylabel "Current (mA)"
+
+set terminal pdf
+set out "tickless.pdf"
+unset key
+
+plot "tickless" using 1:2 with lines title "Sleep" linecolor rgb "red"
