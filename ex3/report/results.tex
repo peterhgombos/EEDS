@@ -6,8 +6,8 @@ the naive implementation is tested.
 This version does not enter sleep mode after rendering a frame,
 and contains no framebuffer rendering optimizations.
 
-The high spikes (around $ 35 ma $ ) originate from when the
-display buffer is refreshed (\emph{76800} system calls!). This implementation has an average
+The high spikes (around $ 35 ma $ ) originate from when the display buffer is
+refreshed (\emph{76800} system calls!). This implementation has an average
 power consumption of roughly $ 33 ma $. Not very efficient.
 
 \begin{figure}[H]
@@ -27,8 +27,7 @@ $ 7.59 mA $ when sleeping,
 and $ 11.95 mA $ when averaged over 10 seconds.
 
 The fat spikes are from when the framebuffer redraws.
-The thin spikes are from kernel ticks,
-these can be turned off for additional power savings.
+The thin spikes are from kernel ticks.
 
 \begin{figure}[H]
 \centering
@@ -38,4 +37,20 @@ these can be turned off for additional power savings.
 \end{figure}
 
 The power usage of the different implementations are nearly identical at the
-peaks, but as shown in figure \ref{fig:sleep}, the energy savings are considerable.
+peaks, but as shown in figure \ref{fig:sleep}, the energy savings are
+considerable.
+
+\subsection{Further improvements}
+
+For increased power savings, kernel ticks can be turned off when the kernel is
+idle\footnotemark.
+
+\footnotetext{
+  \url{https://www.kernel.org/doc/Documentation/timers/NO_HZ.txt}
+}
+
+The Linux kernel offers two modes of tickless running. In the first mode, ticks
+are disabled when the CPU. In the second mode, which is available as of kernel
+3.10, ticks are also turned off if the CPU is running a single task. While this
+newer variant has a more limited suitability, it would be well suited for the
+purpose of this project.
