@@ -255,3 +255,24 @@ To get that nice retro look, all geometry in this impementation of pong is recta
 set to the color of H4CK3R\_GR33N (The Matrix-green).
 
 \subsubsection{Energy efficiency optimization}
+After the observation that rougly $ 99 \% $ of time spent in each iteration of the
+main game loop (122 out of 123 ms) was consumed inside the render function redrawing
+the \emph{entire} framebuffer,
+it was realized that system calls are a costly operation and should be kept to a minimum.
+
+To relieve this fact, drawing techniques went through two stages of improvements,
+both mandating the inclusion of a previous\_position attribute on paddles and puck.
+
+The first improvement consists of moving the framebuffer refresh into the
+rectangle-rendering function, refreshing only modified parts of the framebuffer.
+The second improvement consists of calculating the difference between the current
+and previous positions of gameplay objects, redrawing only the difference between them.
+This allows for considerable savings as a paddle at most moves three pixels per frame,
+allowing a tenfold reduction in system calls.
+
+The original approach has $ 320 * 240 = 76800 $
+system calls per frame, spending $ 123 ms $ doing so.
+The first improvement reduces this to $ 240 * 2 * 2+ 25 * 2 = 1010 $ system calls
+(2 paddles, 1 puck, 1 draw to clear previous position, 1 to draw new one).
+The final system has $ 15 * 2 * 2 + 21 * 2 = 102 $ system calls
+(Drawing only differences, 3px movement speed), spending only $ 1 ms $ in the render loop.
