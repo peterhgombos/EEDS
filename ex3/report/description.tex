@@ -128,9 +128,9 @@ removed and game pad I/O lines are released.
 \end{algorithm}
 
 When the user presses a button, the button interrupt handler~\ref{func:irq} is
-called. This caches the current state of the game pad buttons, and sends a SIGIO
-signal to userspace, which can read the state of the gamepad buttons by calling
-$read()$ on the character device.
+called. This caches the current state of the game pad buttons, and sends a
+SIGIO signal to userspace, which can read the state of the gamepad buttons by
+calling $read()$ on the character device.
 
 \begin{algorithm}
   \footnotesize
@@ -197,9 +197,9 @@ reducing visual performance only.
 If the game loop finishes ahead of time (using less than MS\_PER\_UPDATE ms),
 sleep mode is entered for the remainder (time\_to\_next\_update).
 
-The extremely tuned Pong-implementation presented herein spends roughly $ 1 ms $
-in each loop iteration, allowing a maximum framerate of $ 1000 fps $.
-When targeting $ 24 fps $, the program can sleep for $ 41 ms $ per $ 42 ms $ cycle,
+The extremely tuned Pong-implementation presented herein spends roughly $ 1 ms
+$ in each loop iteration, allowing a maximum framerate of $ 1000 fps $.  When
+targeting $ 24 fps $, the program can sleep for $ 41 ms $ per $ 42 ms $ cycle,
 spending $ 97 \% $ of execution sleeping.
 
 \begin{algorithm}
@@ -241,42 +241,45 @@ To display graphics on the screen, the game uses the Linux framebuffer device.
 All the functions for initializing and adding graphics to the framebuffer are
 contained in graphics.s.
 
-The initializing function opens the framebuffer file in Linux, and then maps the
-file to a region in memory. This is done as it is easier to access an array in memory
-than to search back and forth in a file.
+The initializing function opens the framebuffer file in Linux, and then maps
+the file to a region in memory. This is done as it is easier to access an array
+in memory than to search back and forth in a file.
 
 As a write to the memory mapped area does not update the framebuffer,
 one has to refresh it explicitly.
 This is done by sending a special signal to the framebuffer
 along with bounding indexes, allowing for partial screen updates.
 
-The draw\_pixel() function is used to fill a given pixel with some color.
-When called on a sequence of pixels more complex graphics can be created.
-This Pong implementation includes a fully-functional 7-segment digital watch display,
+The draw\_pixel() function is used to fill a given pixel with some color.  When
+called on a sequence of pixels more complex graphics can be created.  This Pong
+implementation includes a fully-functional 7-segment digital watch display,
 used for displaying player scores.
 
-To get that nice retro look, all geometry in this implementation of Pong is rectangular,
-set to the color of H4CK3R\_GR33N (The Matrix-green).
+To get that nice retro look, all geometry in this implementation of Pong is
+rectangular, set to the color of H4CK3R\_GR33N (The Matrix-green).
 
 \subsubsection{Energy efficiency optimization}
-After the observation that roughly $ 99 \% $ of time spent in each iteration of the
-main game loop (122 out of 123 ms) was consumed inside the render function redrawing
-the \emph{entire} framebuffer,
-it was realized that system calls are a costly operation and should be kept to a minimum.
+After the observation that
+roughly $ 99 \% $ of time spent in each iteration of the main game loop (122
+out of 123 ms) was consumed inside the render function redrawing the
+\emph{entire} framebuffer, it was realized that system calls are a costly
+operation and should be kept to a minimum.
 
-To relieve this fact, drawing techniques went through two stages of improvements,
-both mandating the inclusion of a previous\_position attribute on paddles and puck.
+To relieve this fact, drawing techniques went through two stages of
+improvements, both mandating the inclusion of a previous\_position attribute on
+paddles and puck.
 
 The first improvement consists of moving the framebuffer refresh into the
-rectangle-rendering function, refreshing only modified parts of the framebuffer.
-The second improvement consists of calculating the difference between the current
-and previous positions of game play objects, redrawing only the difference between them.
-This allows for considerable savings as a paddle at most moves three pixels per frame,
-allowing a tenfold reduction in system calls.
+rectangle-rendering function, refreshing only modified parts of the
+framebuffer.  The second improvement consists of calculating the difference
+between the current and previous positions of game play objects, redrawing only
+the difference between them.  This allows for considerable savings as a paddle
+at most moves three pixels per frame, allowing a tenfold reduction in system
+calls.
 
-The original approach has $ 320 * 240 = 76800 $
-system calls per frame, spending $ 123 ms $ doing so.
-The first improvement reduces this to $ 240 * 2 * 2+ 25 * 2 = 1010 $ system calls
-(2 paddles, 1 puck, 1 draw to clear previous position, 1 to draw new one).
-The final system has $ 15 * 2 * 2 + 21 * 2 = 102 $ system calls
-(Drawing only differences, 3px movement speed), spending only $ 1 ms $ in the render loop.
+The original approach has $ 320 * 240 = 76800 $ system calls per frame,
+spending $ 123 ms $ doing so.  The first improvement reduces this to 
+$ 240 * 2 * 2+ 25 * 2 = 1010 $ system calls (2 paddles, 1 puck, 1 draw to clear
+previous position, 1 to draw new one).  The final system has 
+$ 15 * 2 * 2 + 21 * 2 = 102$ system calls (Drawing only differences, 3px 
+movement speed), spending only $1 ms $ in the render loop.
